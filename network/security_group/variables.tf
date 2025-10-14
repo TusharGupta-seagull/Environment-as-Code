@@ -25,7 +25,7 @@ variable "sg_vpc_id" {
   type        = string
   default     = null
   validation {
-    condition = var.sg_vpc_id != null && var.sg_vpc_id != ""
+    condition     = var.sg_vpc_id != null && var.sg_vpc_id != ""
     error_message = "VPC ID is required when creating security group"
   }
 }
@@ -45,8 +45,8 @@ variable "sg_egress_rules" {
   default = {
     ipv4_default = {
       cidr_ipv4   = "0.0.0.0/0"
-      from_port = 0
-      to_port = 0
+      from_port   = 0
+      to_port     = 0
       ip_protocol = "-1"
       description = "Allow all IPv4 traffic"
     }

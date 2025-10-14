@@ -78,8 +78,8 @@ variable "root_block_device" {
   description = "Customize the root block device of the instance"
   type = object({
     delete_on_termination = optional(bool)
-    volume_type                  = optional(string)
-    volume_size                  = optional(number)
+    volume_type           = optional(string)
+    volume_size           = optional(number)
     iops                  = optional(number)
     throughput            = optional(number)
     encrypted             = optional(bool)

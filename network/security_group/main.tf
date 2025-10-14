@@ -37,7 +37,7 @@ resource "aws_vpc_security_group_ingress_rule" "this" {
 resource "aws_vpc_security_group_egress_rule" "this" {
   for_each = local.create_sg && length(var.sg_egress_rules) > 0 ? var.sg_egress_rules : {}
 
-  security_group_id            = aws_security_group.main[0].id
+  security_group_id = aws_security_group.main[0].id
 
   cidr_ipv4                    = each.value.cidr_ipv4
   from_port                    = each.value.from_port

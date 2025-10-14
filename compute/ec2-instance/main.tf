@@ -14,13 +14,13 @@ locals {
 }
 
 data "aws_ssm_parameter" "ami" {
-  count  = local.create_instance && var.ami_id == null ? 1 : 0
-  name   = var.ami_id_ssm_parameter
+  count = local.create_instance && var.ami_id == null ? 1 : 0
+  name  = var.ami_id_ssm_parameter
 }
 
 
 resource "aws_instance" "main" {
-  count  = local.create_instance ? 1 : 0
+  count = local.create_instance ? 1 : 0
 
   dynamic "launch_template" {
     for_each = var.launch_template != null ? [var.launch_template] : []
