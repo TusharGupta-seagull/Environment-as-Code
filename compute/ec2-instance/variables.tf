@@ -62,6 +62,12 @@ variable "subnet_id" {
   }
 }
 
+variable "vpc_security_group_ids" {
+  description = "List of security group IDs to associate with the instance"
+  type        = list(string)
+  default     = []
+}
+
 variable "user_data" {
   description = "The user data to provide when launching the instance"
   type        = string

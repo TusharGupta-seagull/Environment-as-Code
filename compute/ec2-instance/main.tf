@@ -30,7 +30,8 @@ resource "aws_instance" "main" {
       version = launch_template.value.version
     }
   }
-
+  vpc_security_group_ids = var.vpc_security_group_ids
+  
   ami           = local.ami
   instance_type = var.instance_type
   key_name      = var.key_name
