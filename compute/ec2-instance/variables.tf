@@ -28,11 +28,11 @@ variable "ami_id_ssm_parameter" {
   default     = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 }
 
-variable "ami_id_ignore_changes" {
-  description = "Flag to ignore changes to the AMI ID after creation"
-  type        = bool
-  default     = true
-}
+# variable "ami_id_ignore_changes" {
+#   description = "Flag to ignore changes to the AMI ID after creation"
+#   type        = bool
+#   default     = true
+# }
 
 variable "instance_type" {
   description = "The instance type for the EC2 instance"

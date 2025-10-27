@@ -57,6 +57,6 @@ resource "aws_instance" "main" {
   tags = local.tags
 
   lifecycle {
-    ignore_changes = var.ami_id_ignore_changes ? [ami] : []
+    ignore_changes = [ami]
   }
 }
