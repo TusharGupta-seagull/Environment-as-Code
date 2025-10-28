@@ -28,11 +28,11 @@ variable "ami_id_ssm_parameter" {
   default     = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 }
 
-variable "ami_id_ignore_changes" {
-  description = "Flag to ignore changes to the AMI ID after creation"
-  type        = bool
-  default     = true
-}
+# variable "ami_id_ignore_changes" {
+#   description = "Flag to ignore changes to the AMI ID after creation"
+#   type        = bool
+#   default     = true
+# }
 
 variable "instance_type" {
   description = "The instance type for the EC2 instance"
@@ -60,6 +60,12 @@ variable "subnet_id" {
     condition     = var.subnet_id != null
     error_message = "Subnet ID is required for EC2 instance."
   }
+}
+
+variable "vpc_security_group_ids" {
+  description = "List of security group IDs to associate with the instance"
+  type        = list(string)
+  default     = []
 }
 
 variable "user_data" {
