@@ -25,7 +25,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.this.id
 
   tags = {
-    "Name" = "${var.env_name}-igw"
+    "Name" = "${var.project_name}-${var.env_name}-igw"
   }
 }
 
@@ -58,8 +58,10 @@ resource "aws_subnet" "pub_sub" {
   cidr_block        = each.value.cidr
   availability_zone = each.value.avail_zone
 
+  map_public_ip_on_launch = var.map_public_ip_on_launch
+
   tags = {
-    "Name" = "${var.env_name}-pub-${each.key}"
+    "Name" = "${var.project_name}-${var.env_name}-pub-${each.key}"
   }
 }
 
@@ -72,7 +74,7 @@ resource "aws_subnet" "priv_sub" {
   availability_zone = each.value.avail_zone
 
   tags = {
-    "Name" = "${var.env_name}-priv-${each.key}"
+    "Name" = "${var.project_name}-${var.env_name}-priv-${each.key}"
   }
 }
 

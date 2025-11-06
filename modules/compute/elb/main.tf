@@ -14,10 +14,9 @@ resource "aws_lb" "this" {
   enable_deletion_protection = var.enable_deletion_protection
   drop_invalid_header_fields = local.is_alb ? true : null
 
-  tags = merge(
-    var.tags,
-    { Name = var.name }
-  )
+  tags = merge(var.tags, {
+    "Name" = "${var.project_name}-${var.env_name}-alb"
+  })
 }
 
 resource "aws_lb_target_group" "this" {
@@ -41,7 +40,7 @@ resource "aws_lb_target_group" "this" {
 
   tags = merge(
     var.tags,
-    { Name = "${var.name}-tg" }
+    { "Name" = "${var.project_name}-${var.env_name}-tg" }
   )
 }
 

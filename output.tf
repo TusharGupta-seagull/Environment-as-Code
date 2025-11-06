@@ -1,4 +1,5 @@
 
+# VPC Outputs
 output "vpc_id" {
   description = "ID of the VPC"
   value       = module.vpc.vpc_id
@@ -29,77 +30,95 @@ output "internet_gateway_id" {
   value       = module.vpc.internet_gateway_id
 }
 
-output "ec2_security_group_id" {
-  description = "ID of the EC2 security group"
-  value       = module.ec2_security_group.security_group_id
+# Security Groups
+output "bastion_security_group_id" {
+  description = "ID of Bastion SG"
+  value       = module.bastion_security_group.security_group_id
+}
+
+output "app_security_group_id" {
+  description = "ID of App SG"
+  value       = module.app_security_group.security_group_id
+}
+
+output "db_security_group_id" {
+  description = "ID of DB SG"
+  value       = module.db_security_group.security_group_id
 }
 
 output "alb_security_group_id" {
-  description = "ID of the ALB security group"
-  value       = var.create_alb ? module.alb_security_group.security_group_id : null
+  description = "ID of ALB SG"
+  value       = module.alb_security_group.security_group_id
 }
 
-output "ec2_instance_ids" {
-  description = "IDs of all EC2 instances"
-  value       = [for instance in module.ec2_instances : instance.id]
+# EC2 Instances
+output "bastion_instance_ids" {
+  description = "IDs of Bastion instances"
+  value       = [for instance in module.bastion_instances : instance.id]
 }
 
-output "ec2_instance_private_ips" {
-  description = "Private IP addresses of EC2 instances"
-  value       = [for instance in module.ec2_instances : instance.private_ip]
+output "bastion_public_ips" {
+  description = "Public IPs of Bastion instances"
+  value       = [for instance in module.bastion_instances : instance.public_ip]
 }
 
-output "ec2_instance_public_ips" {
-  description = "Public IP addresses of EC2 instances (if assigned)"
-  value       = [for instance in module.ec2_instances : instance.public_ip]
+output "app_instance_ids" {
+  description = "IDs of Application instances"
+  value       = [for instance in module.app_instances : instance.id]
 }
 
-output "ec2_instance_details" {
-  description = "Detailed information about each EC2 instance"
-  value = {
-    for idx, instance in module.ec2_instances : idx => {
-      id         = instance.id
-      private_ip = instance.private_ip
-      public_ip  = instance.public_ip
-      subnet_id  = instance.subnet_id
-      az         = instance.availability_zone
-    }
-  }
+output "app_private_ips" {
+  description = "Private IPs of Application instances"
+  value       = [for instance in module.app_instances : instance.private_ip]
 }
 
+output "db_instance_ids" {
+  description = "IDs of Database instances"
+  value       = [for instance in module.db_instances : instance.id]
+}
+
+output "db_private_ips" {
+  description = "Private IPs of Database instances"
+  value       = [for instance in module.db_instances : instance.private_ip]
+}
+
+# Application Load Balancer
 output "alb_arn" {
   description = "ARN of the Application Load Balancer"
-  value       = var.create_alb ? module.alb[0].lb_arn : null
+  value       = module.alb.lb_arn
 }
 
 output "alb_dns_name" {
   description = "DNS name of the Application Load Balancer"
-  value       = var.create_alb ? module.alb[0].lb_dns_name : null
+  value       = module.alb.lb_dns_name
 }
 
 output "alb_zone_id" {
   description = "Zone ID of the Application Load Balancer"
-  value       = var.create_alb ? module.alb[0].lb_zone_id : null
+  value       = module.alb.lb_zone_id
 }
 
 output "alb_target_group_arn" {
   description = "ARN of the ALB target group"
-  value       = var.create_alb ? module.alb[0].target_group_arn : null
+  value       = module.alb.target_group_arn
 }
 
 output "alb_url" {
   description = "URL to access the Application Load Balancer"
-  value       = var.create_alb ? "http://${module.alb[0].lb_dns_name}" : null
+  value       = "http://${module.alb.lb_dns_name}"
 }
 
+# Deployment Summary
 output "deployment_summary" {
   description = "Summary of the deployed infrastructure"
   value = {
-    region             = var.aws_region
-    project_name       = var.project_name
-    environment        = var.environment
-    vpc_id             = module.vpc.vpc_id
-    instance_count     = var.instance_count
-    load_balancer_type = var.create_alb ? "application" : "none"
+    region            = var.aws_region
+    project_name      = var.project_name
+    environment       = var.env_name
+    vpc_id            = module.vpc.vpc_id
+    bastion_instances = [for i in module.bastion_instances : i.id]
+    app_instances     = [for i in module.app_instances : i.id]
+    db_instances      = [for i in module.db_instances : i.id]
+    alb_dns_name      = module.alb.lb_dns_name
   }
 }

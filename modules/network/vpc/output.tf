@@ -156,13 +156,13 @@ output "private_route_table_isolated" {
 output "network_summary" {
   description = "Summary of the VPC network configuration"
   value = {
-    vpc_id                    = aws_vpc.this.id
-    vpc_cidr                  = aws_vpc.this.cidr_block
-    public_subnet_count       = length(aws_subnet.pub_sub)
-    private_subnet_count      = length(aws_subnet.priv_sub)
-    nat_enabled               = local.nat_required
-    private_subnets_with_nat  = length(local.priv_subnets_with_nat)
-    private_subnets_isolated  = length(local.priv_subnets_isolated)
+    vpc_id                   = aws_vpc.this.id
+    vpc_cidr                 = aws_vpc.this.cidr_block
+    public_subnet_count      = length(aws_subnet.pub_sub)
+    private_subnet_count     = length(aws_subnet.priv_sub)
+    nat_enabled              = local.nat_required
+    private_subnets_with_nat = length(local.priv_subnets_with_nat)
+    private_subnets_isolated = length(local.priv_subnets_isolated)
   }
 }
 
