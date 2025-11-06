@@ -1,9 +1,5 @@
 # Root Module - variables.tf
-# Variable definitions for the root module
 
-# ==============================================================================
-# General Configuration
-# ==============================================================================
 variable "aws_region" {
   description = "AWS region where resources will be created"
   type        = string
@@ -13,32 +9,34 @@ variable "aws_region" {
 variable "project_name" {
   description = "Name of the project, used for resource naming"
   type        = string
-  default     = "MyProject"
+  default     = "EAC"
 }
 
-variable "environment" {
+variable "env_name" {
   description = "Environment name (e.g., dev, staging, prod)"
   type        = string
   default     = "dev"
 }
 
-variable "common_tags" {
+variable "tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
   default = {
     Terraform   = "true"
     Environment = "dev"
-    ManagedBy   = "Terraform"
   }
 }
 
-# ==============================================================================
-# VPC Configuration
-# ==============================================================================
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string
   default     = "10.0.0.0/16"
+}
+
+variable "map_public_ip_on_launch" {
+  description = "Whether to map public IP addresses on launch for public subnets"
+  type        = bool
+  default     = true
 }
 
 variable "public_subnets" {
@@ -70,45 +68,37 @@ variable "private_subnets" {
     {
       cidr             = "10.0.10.0/24"
       enable_nat_route = true
-      avail_zone       = "us-east-1a"
-    },
-    {
-      cidr             = "10.0.11.0/24"
-      enable_nat_route = true
       avail_zone       = "us-east-1b"
     }
   ]
 }
 
-variable "nat_gateway_subnet_cidr" {
-  description = "CIDR of the public subnet where NAT Gateway should be placed"
-  type        = string
-  default     = null
-}
 
-# ==============================================================================
-# EC2 Configuration
-# ==============================================================================
-variable "instance_count" {
-  description = "Number of EC2 instances to create"
-  type        = number
-  default     = 2
-  validation {
-    condition     = var.instance_count > 0 && var.instance_count <= 10
-    error_message = "Instance count must be between 1 and 10."
-  }
-}
+# variable "ec2_config" {
+#   description = "Config for EC2 instances"
+#   type = map(object({
+#     count                       = optional(number)
+#     instance_type               = string
+#     subnet_id                   = string
+#     key_name                    = string
+#     sg_ids                      = list(string)
+#     ami_id                      = optional(string)
+#     user_data                   = optional(string)
+#     availability_zone           = optional(string)
+#     associate_public_ip_address = optional(bool)
+#     root_block_device = optional(object({
+#       delete_on_termination = optional(bool)
+#       volume_type           = optional(string)
+#       volume_size           = optional(number)
+#       encrypted             = optional(bool)
+#     }))
+#   }))
+# }
 
 variable "ami_id" {
   description = "AMI ID for EC2 instances (leave null to use latest Amazon Linux 2023)"
   type        = string
   default     = null
-}
-
-variable "instance_type" {
-  description = "EC2 instance type"
-  type        = string
-  default     = "t3.micro"
 }
 
 variable "key_name" {
@@ -117,66 +107,42 @@ variable "key_name" {
   default     = "my-terraform-key"
 }
 
-variable "root_volume_size" {
-  description = "Size of the root EBS volume in GB"
-  type        = number
-  default     = 20
-}
-
-variable "enable_encryption" {
-  description = "Enable EBS encryption"
-  type        = bool
-  default     = true
-}
-
-variable "user_data_script" {
-  description = "User data script for EC2 instances"
-  type        = string
-  default     = <<-EOF
-    #!/bin/bash
-    yum update -y
-    yum install -y httpd
-    systemctl start httpd
-    systemctl enable httpd
-    echo "<h1>Hello from $(hostname -f)</h1>" > /var/www/html/index.html
-  EOF
-}
-
 variable "allowed_ssh_cidr" {
   description = "CIDR block allowed to SSH into EC2 instances"
   type        = string
   default     = "0.0.0.0/0"
 }
 
-# ==============================================================================
-# Load Balancer Configuration
-# ==============================================================================
 variable "create_alb" {
   description = "Whether to create an Application Load Balancer"
   type        = bool
   default     = true
 }
 
-variable "enable_deletion_protection" {
-  description = "Enable deletion protection for the load balancer"
-  type        = bool
-  default     = false
-}
+variable "alb_config" {
+  description = "Configuration for the Application Load Balancer"
+  type = object({
+    name                       = optional(string)
+    load_balancer_type         = optional(string)
+    internal                   = optional(bool)
+    enable_deletion_protection = optional(bool)
+    target_port                = optional(number)
+    target_type                = optional(string)
+    listener_port              = optional(number)
+    protocol                   = optional(string)
+    health_check_path          = optional(string)
+    certificate_arn            = optional(string)
+  })
 
-variable "target_port" {
-  description = "Port on which targets receive traffic"
-  type        = number
-  default     = 80
-}
-
-variable "health_check_path" {
-  description = "Health check path for ALB target group"
-  type        = string
-  default     = "/"
-}
-
-variable "certificate_arn" {
-  description = "ARN of ACM certificate for HTTPS listener (optional)"
-  type        = string
-  default     = ""
+  default = {
+    load_balancer_type         = "application"
+    internal                   = false
+    enable_deletion_protection = false
+    target_port                = 80
+    target_type                = "instance"
+    listener_port              = 80
+    protocol                   = "HTTP"
+    health_check_path          = "/"
+    certificate_arn            = ""
+  }
 }

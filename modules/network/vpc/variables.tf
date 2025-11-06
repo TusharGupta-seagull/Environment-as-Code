@@ -1,13 +1,11 @@
 variable "project_name" {
   description = "Name of the project, used for resource naming"
   type        = string
-  default     = "Seagulls"
 }
 
 variable "env_name" {
   description = "Environment name (e.g., dev, staging, prod)"
   type        = string
-  default     = "dev"
 }
 
 variable "tags" {
@@ -52,6 +50,12 @@ variable "priv_cidrs" {
       avail_zone       = null
     }
   ]
+}
+
+variable "map_public_ip_on_launch" {
+  description = "Whether to map public IP addresses on launch for public subnets"
+  type        = bool
+  default     = false
 }
 
 variable "nat_gateway_subnet_cidr" {

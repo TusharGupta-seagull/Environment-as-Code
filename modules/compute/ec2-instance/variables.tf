@@ -3,6 +3,17 @@ variable "create" {
   type        = bool
   default     = true
 }
+variable "project_name" {
+  description = "Name of the project, used for resource naming"
+  type        = string
+  default     = "EAC"
+}
+
+variable "env_name" {
+  description = "Environment name (e.g., dev, staging, prod)"
+  type        = string
+  default     = "dev"
+}
 
 variable "name" {
   description = "Name to be used on EC2 instance"
@@ -33,6 +44,12 @@ variable "ami_id_ssm_parameter" {
 #   type        = bool
 #   default     = true
 # }
+
+variable "associate_public_ip_address" {
+  description = "Whether to associate a public IP address with the instance"
+  type        = bool
+  default     = true
+}
 
 variable "instance_type" {
   description = "The instance type for the EC2 instance"
