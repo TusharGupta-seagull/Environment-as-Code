@@ -9,7 +9,6 @@ locals {
       key_name                    = var.key_name
       sg_ids                      = [module.bastion_security_group.security_group_id]
       ami_id                      = var.ami_id
-      user_data                   = file("${path.module}/userdata/bastion.sh")
       associate_public_ip_address = true
       root_block_device = {
         delete_on_termination = true
@@ -25,7 +24,6 @@ locals {
       subnet_id     = module.vpc.private_subnet_ids
       key_name      = var.key_name
       sg_ids        = [module.app_security_group.security_group_id]
-      user_data     = file("${path.module}/userdata/app.sh")
       root_block_device = {
         delete_on_termination = true
         volume_type           = "gp3"
@@ -48,7 +46,27 @@ locals {
       }
     }
   }
+  ssh_key_path = "${path.module}/ansible/ssh_key.pem"
+  ec2_key_name = aws_key_pair.ansible_key.key_name
 }
+
+# SSH KEY GENERATION
+resource "tls_private_key" "ssh_key_gen" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_file" "private_key_pem" {
+  filename        = "${path.module}/ansible/ssh_key.pem"
+  content         = tls_private_key.ssh_key_gen.private_key_pem
+  file_permission = "0400"
+}
+
+resource "aws_key_pair" "ansible_key" {
+  key_name   = var.key_name
+  public_key = tls_private_key.ssh_key_gen.public_key_openssh
+}
+
 
 # VPC Module
 module "vpc" {
@@ -100,8 +118,6 @@ module "alb_security_group" {
 
   sg_egress_rules = {
     all_traffic = {
-      from_port   = 0
-      to_port     = 0
       ip_protocol = "-1"
       cidr_ipv4   = "0.0.0.0/0"
       description = "Allow all outbound traffic"
@@ -137,8 +153,6 @@ module "bastion_security_group" {
 
   sg_egress_rules = {
     all_traffic = {
-      from_port   = 0
-      to_port     = 0
       ip_protocol = "-1"
       cidr_ipv4   = "0.0.0.0/0"
       description = "Allow all outbound traffic"
@@ -189,8 +203,7 @@ module "app_security_group" {
 
   sg_egress_rules = {
     all_traffic = {
-      from_port   = 0
-      to_port     = 0
+
       ip_protocol = "-1"
       cidr_ipv4   = "0.0.0.0/0"
       description = "Allow all outbound traffic"
@@ -232,8 +245,6 @@ module "db_security_group" {
 
   sg_egress_rules = {
     all_traffic = {
-      from_port   = 0
-      to_port     = 0
       ip_protocol = "-1"
       cidr_ipv4   = "0.0.0.0/0"
       description = "Allow all outbound traffic"
@@ -259,7 +270,7 @@ module "bastion_instances" {
 
   instance_type               = local.ec2_config["bastion"].instance_type
   subnet_id                   = local.ec2_config["bastion"].subnet_id
-  key_name                    = local.ec2_config["bastion"].key_name
+  key_name                    = local.ec2_key_name
   vpc_security_group_ids      = local.ec2_config["bastion"].sg_ids
   associate_public_ip_address = lookup(local.ec2_config["bastion"], "associate_public_ip_address", true)
   ami_id                      = lookup(local.ec2_config["bastion"], "ami_id", null)
@@ -273,7 +284,7 @@ module "bastion_instances" {
     Environment = var.env_name
   }
 
-  depends_on = [module.vpc, module.bastion_security_group]
+  depends_on = [module.vpc, module.bastion_security_group, aws_key_pair.ansible_key]
 }
 
 ## instance for application
@@ -286,7 +297,7 @@ module "app_instances" {
 
   instance_type          = local.ec2_config["app"].instance_type
   subnet_id              = local.ec2_config["app"].subnet_id[count.index % length(local.ec2_config["app"].subnet_id)]
-  key_name               = local.ec2_config["app"].key_name
+  key_name               = local.ec2_key_name
   vpc_security_group_ids = local.ec2_config["app"].sg_ids
   ami_id                 = lookup(local.ec2_config["app"], "ami_id", null)
   user_data              = lookup(local.ec2_config["app"], "user_data", null)
@@ -299,7 +310,7 @@ module "app_instances" {
     Environment = var.env_name
   }
 
-  depends_on = [module.vpc, module.app_security_group]
+  depends_on = [module.vpc, module.app_security_group, aws_key_pair.ansible_key]
 }
 
 ## instance for database
@@ -312,7 +323,7 @@ module "db_instances" {
 
   instance_type          = local.ec2_config["db"].instance_type
   subnet_id              = local.ec2_config["db"].subnet_id
-  key_name               = local.ec2_config["db"].key_name
+  key_name               = local.ec2_key_name
   vpc_security_group_ids = local.ec2_config["db"].sg_ids
   ami_id                 = lookup(local.ec2_config["db"], "ami_id", null)
   availability_zone      = lookup(local.ec2_config["db"], "availability_zone", null)
@@ -324,7 +335,7 @@ module "db_instances" {
     Environment = var.env_name
   }
 
-  depends_on = [module.vpc, module.db_security_group]
+  depends_on = [module.vpc, module.db_security_group, aws_key_pair.ansible_key]
 }
 
 # Application Load Balancer
@@ -354,3 +365,4 @@ module "alb" {
 
   depends_on = [module.vpc, module.app_instances, module.alb_security_group]
 }
+

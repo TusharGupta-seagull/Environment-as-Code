@@ -1,0 +1,32 @@
+Host bastion
+    HostName 3.219.217.224
+    User ec2-user
+    IdentityFile ./ansible/ssh_key.pem
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+
+Host app-1
+    HostName 10.0.10.183
+    ProxyJump bastion
+    User ec2-user
+    IdentityFile ./ansible/ssh_key.pem
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+Host app-2
+    HostName 10.0.10.161
+    ProxyJump bastion
+    User ec2-user
+    IdentityFile ./ansible/ssh_key.pem
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+
+
+Host db-1
+    HostName 10.0.10.34
+    ProxyJump bastion
+    User ec2-user
+    IdentityFile ./ansible/ssh_key.pem
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+
+

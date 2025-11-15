@@ -104,9 +104,14 @@ variable "ami_id" {
 variable "key_name" {
   description = "Name of the SSH key pair for EC2 access"
   type        = string
-  default     = "my-terraform-key"
+  default     = "ssh-key"
 }
 
+variable "ec2_user" {
+  description = "Name of the user for SSH into the ec2 instances"
+  type        = string
+  default     = "ec2-user"
+}
 variable "allowed_ssh_cidr" {
   description = "CIDR block allowed to SSH into EC2 instances"
   type        = string
@@ -146,3 +151,5 @@ variable "alb_config" {
     certificate_arn            = ""
   }
 }
+
+

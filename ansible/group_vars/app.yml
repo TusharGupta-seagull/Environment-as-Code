@@ -1,0 +1,8 @@
+env_backend:
+  NODE_ENV: production
+  PORT: 3000
+  DB_HOST: "{{ hostvars['db-server'].ansible_default_ipv4.address }}"
+  DB_USER: root
+  DB_PASS: "{{ vault_mysql_root_password }}"
+  DB_NAME: crud_react_node
+  BACKEND_HOST: "{{ hostvars['app-server-1'].ansible_default_ipv4.address }}"

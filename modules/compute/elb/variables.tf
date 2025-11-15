@@ -100,3 +100,13 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "elb_type" {
+  type = map(string)
+  default = {
+    "alb"  = "application",
+    "nlb"  = "network",
+    "gwlb" = "gateway"
+  }
+
+}

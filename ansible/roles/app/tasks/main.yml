@@ -1,0 +1,124 @@
+ 
+- name: Create backend .env file locally
+  template:
+    src: "{{ playbook_dir }}/roles/app/templates/env_backend.j2"
+    dest: "{{ playbook_dir }}/artifacts/backend/.env"
+    mode: '0644'
+  delegate_to: localhost
+  run_once: true
+
+# ---------- BUILD FRONTEND LOCALLY ----------
+- name: Ensure Node.js and npm exist on control node
+  delegate_to: localhost
+  become: false
+  ansible.builtin.command: npm --version
+  register: npm_check
+  changed_when: false
+  failed_when: npm_check.rc != 0
+
+- name: Install frontend dependencies locally
+  delegate_to: localhost
+  become: false
+  ansible.builtin.shell: npm install
+  args:
+    chdir: "{{ playbook_dir }}/artifacts/frontend"
+
+- name: Build React app locally
+  delegate_to: localhost
+  become: false
+  ansible.builtin.shell: npm run build
+  args:
+    chdir: "{{ playbook_dir }}/artifacts/frontend"
+
+# ---------- DEPLOY ON APP SERVER ----------
+- name: Install Nginx
+  become: true
+  ansible.builtin.yum:
+    name: nginx
+    state: present
+
+- name: Ensure Nginx service is enabled and started
+  become: true
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Clean old files from Nginx web root
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/nginx/html
+    state: absent
+
+- name: Recreate Nginx web root
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/nginx/html
+    state: directory
+    mode: "0755"
+
+- name: Copy built React files to Nginx web root
+  become: true
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/artifacts/frontend/build/"
+    dest: /usr/share/nginx/html/
+    owner: nginx
+    group: nginx
+    mode: "0755"
+  notify: restart nginx
+
+- name: Configure Nginx for frontend + backend
+  become: true
+  ansible.builtin.template:
+    src: nginx_frontend.conf.j2
+    dest: /etc/nginx/conf.d/frontend.conf
+  notify: restart nginx
+
+# ---------- BACKEND SETUP ----------
+- name: Install Node.js LTS
+  become: true
+  ansible.builtin.shell: |
+    curl -fsSL https://rpm.nodesource.com/setup_lts.x | bash -
+    yum install -y nodejs
+  args:
+    creates: /usr/bin/node
+
+- name: Install PM2 globally
+  become: true
+  community.general.npm:
+    name: pm2
+    global: true
+    state: present
+
+- name: Ensure backend directory exists
+  become: true
+  ansible.builtin.file:
+    path: /var/www/backend
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+    mode: "0755"
+
+- name: Copy backend files to server
+  become: true
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/artifacts/backend/"
+    dest: /var/www/backend/
+    owner: ec2-user
+    group: ec2-user
+    mode: "0755"
+
+- name: Install backend dependencies
+  become: true
+  ansible.builtin.shell: npm install --silent
+  args:
+    chdir: /var/www/backend
+
+- name: Start backend with PM2
+  become: true
+  ansible.builtin.shell: |
+    pm2 start npm --name backend -- start
+    pm2 save
+  args:
+    chdir: /var/www/backend
+

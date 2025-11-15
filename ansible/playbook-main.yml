@@ -1,0 +1,18 @@
+---
+- name: Setup MySQL on Amazon Linux
+  hosts: db
+  become: true
+  vars_files:
+    - vault.yml
+    - group_vars/db.yml
+  roles:
+    - db
+
+- name: Setup App Server (Node + React + Nginx)
+  hosts: app
+  become: true
+  vars_files:
+    - vault.yml
+    - group_vars/app.yml
+  roles:
+    - app
