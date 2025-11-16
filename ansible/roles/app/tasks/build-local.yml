@@ -1,0 +1,60 @@
+---
+- name: Validate local build environment
+  block:
+    - name: Check Node.js availability
+      command: node --version
+      register: node_check
+      changed_when: false
+      
+    - name: Check npm availability
+      command: npm --version
+      register: npm_check
+      changed_when: false
+      
+    - name: Fail if build tools missing
+      fail:
+        msg: "Node.js and npm required for build. Node status: {{ node_check.rc }}, npm status: {{ npm_check.rc }}"
+      when: node_check.rc != 0 or npm_check.rc != 0
+  delegate_to: localhost
+
+- name: Create backend environment file locally
+  template:
+    src: "{{ playbook_dir }}/roles/app/templates/env_backend.j2"
+    dest: "{{ playbook_dir }}/artifacts/backend/.env"
+    mode: "0644"
+  delegate_to: localhost
+  run_once: true
+
+- name: Install frontend dependencies locally
+  shell: npm install
+  args:
+    chdir: "{{ playbook_dir }}/artifacts/frontend"
+  delegate_to: localhost
+  run_once: true
+
+- name: Build React app locally
+  shell: npm run build
+  args:
+    chdir: "{{ playbook_dir }}/artifacts/frontend"
+  delegate_to: localhost
+  run_once: true
+  environment:
+    NODE_ENV: production
+
+- name: Verify build artifacts
+  block:
+    - name: Check if frontend build exists
+      stat:
+        path: "{{ playbook_dir }}/artifacts/frontend/build"
+      register: frontend_build
+      
+    - name: Check if backend env file exists
+      stat:
+        path: "{{ playbook_dir }}/artifacts/backend/.env"
+      register: backend_env
+      
+    - name: Fail if build artifacts missing
+      fail:
+        msg: "Build failed: frontend={{ frontend_build.stat.exists }}, backend_env={{ backend_env.stat.exists }}"
+      when: not frontend_build.stat.exists or not backend_env.stat.exists
+  delegate_to: localhost

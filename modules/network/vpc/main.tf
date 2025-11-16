@@ -58,7 +58,7 @@ resource "aws_subnet" "pub_sub" {
   cidr_block        = each.value.cidr
   availability_zone = each.value.avail_zone
 
-  map_public_ip_on_launch = var.map_public_ip_on_launch
+  map_public_ip_on_launch = var.map_public_ip_on_launch.pub_sub
 
   tags = {
     "Name" = "${var.project_name}-${var.env_name}-pub-${each.key}"
@@ -69,9 +69,10 @@ resource "aws_subnet" "pub_sub" {
 resource "aws_subnet" "priv_sub" {
   for_each = { for subnet in var.priv_cidrs : subnet.cidr => subnet }
 
-  vpc_id            = aws_vpc.this.id
-  cidr_block        = each.value.cidr
-  availability_zone = each.value.avail_zone
+  vpc_id                  = aws_vpc.this.id
+  cidr_block              = each.value.cidr
+  availability_zone       = each.value.avail_zone
+  map_public_ip_on_launch = var.map_public_ip_on_launch.priv_sub
 
   tags = {
     "Name" = "${var.project_name}-${var.env_name}-priv-${each.key}"

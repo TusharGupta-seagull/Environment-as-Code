@@ -1,0 +1,37 @@
+---
+- name: Check if backend is running
+  shell: |
+    pm2 list | grep backend
+  register: pm2_status
+  changed_when: false
+  failed_when: pm2_status.rc != 0
+
+- name: Check backend health endpoint
+  uri:
+    url: "http://localhost:3000/health"
+    method: GET
+    status_code: 200
+  register: health_check
+  until: health_check.status == 200
+  retries: 10
+  delay: 5
+
+- name: Check Nginx status
+  service:
+    name: nginx
+    state: started
+
+- name: Verify frontend serving
+  uri:
+    url: "http://localhost/"
+    method: GET
+    status_code: 200
+  register: frontend_check
+
+- name: Display deployment status
+  debug:
+    msg: |
+      Deployment Successful!
+      - Backend: {{ health_check.status }}
+      - Frontend: {{ frontend_check.status }}
+      - PM2: {{ pm2_status.rc == 0 | ternary('RUNNING', 'STOPPED') }}

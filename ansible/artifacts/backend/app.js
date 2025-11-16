@@ -1,6 +1,5 @@
 import express from "express"
 import cors from 'cors'
-// importamos la conexión a la DB
 import db from "./database/db.js"
 
 import blogRoutes from "./routes/routes.js"
@@ -22,6 +21,12 @@ app.get('/', (req, res) => {
 })
 app.use("/blogs", blogRoutes)
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() })
+})
+
+// Test DB connection
 try {
     await db.authenticate()
     console.log('Conexión exitosa a la DB')
@@ -30,7 +35,7 @@ try {
 }
 
 
-
-app.listen(8000, () => {
-    console.log('Server UP running in http://localhost:8000/')
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log('Server UP running in http://localhost:${PORT}/')
 })
