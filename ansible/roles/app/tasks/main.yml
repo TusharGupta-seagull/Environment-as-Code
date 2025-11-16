@@ -1,9 +1,0 @@
----
-- name: Include frontend deployment tasks
-  include_tasks: deploy-frontend.yml
-
-- name: Include backend deployment tasks
-  include_tasks: deploy-backend.yml
-
-- name: Include verification tasks
-  include_tasks: verify.yml
