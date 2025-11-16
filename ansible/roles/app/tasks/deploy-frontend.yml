@@ -1,0 +1,40 @@
+---
+- name: Install Nginx
+  yum:
+    name: nginx
+    state: present
+
+- name: Ensure Nginx service is enabled and started
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Prepare Nginx web root
+  block:
+    - name: Clean Nginx web root
+      file:
+        path: /usr/share/nginx/html
+        state: absent
+      ignore_errors: true
+
+    - name: Recreate Nginx web root
+      file:
+        path: /usr/share/nginx/html
+        state: directory
+        mode: "0755"
+
+- name: Copy built React files to Nginx
+  copy:
+    src: "{{ playbook_dir }}/artifacts/frontend/build/"
+    dest: /usr/share/nginx/html/
+    owner: nginx
+    group: nginx
+    mode: "0755"
+  notify: restart nginx
+
+- name: Configure Nginx for frontend + backend
+  template:
+    src: "{{ playbook_dir }}/roles/app/templates/nginx_frontend.conf.j2"
+    dest: /etc/nginx/conf.d/frontend.conf
+  notify: restart nginx

@@ -1,0 +1,7 @@
+# group_vars/db.yml
+mysql_root_password: "{{ vault_mysql_root_password }}"
+mysql_db: appdb
+mysql_user: appuser
+mysql_password: "{{ vault_db_app_password }}"
+bind_address: 0.0.0.0
+

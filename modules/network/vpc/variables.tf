@@ -54,8 +54,11 @@ variable "priv_cidrs" {
 
 variable "map_public_ip_on_launch" {
   description = "Whether to map public IP addresses on launch for public subnets"
-  type        = bool
-  default     = false
+  type        = map(bool)
+  default = {
+    pub_sub  = true
+    priv_sub = false
+  }
 }
 
 variable "nat_gateway_subnet_cidr" {

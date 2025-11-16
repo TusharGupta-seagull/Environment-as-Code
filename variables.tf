@@ -1,11 +1,13 @@
 # Root Module - variables.tf
 
+# Provider Configuration
 variable "aws_region" {
   description = "AWS region where resources will be created"
   type        = string
   default     = "us-east-1"
 }
 
+# Project Configuration
 variable "project_name" {
   description = "Name of the project, used for resource naming"
   type        = string
@@ -24,6 +26,7 @@ variable "tags" {
   default = {
     Terraform   = "true"
     Environment = "dev"
+    Project     = "EAC"
   }
 }
 
@@ -35,8 +38,11 @@ variable "vpc_cidr" {
 
 variable "map_public_ip_on_launch" {
   description = "Whether to map public IP addresses on launch for public subnets"
-  type        = bool
-  default     = true
+  type        = map(bool)
+  default = {
+    pub_sub  = true
+    priv_sub = false
+  }
 }
 
 variable "public_subnets" {
@@ -104,7 +110,16 @@ variable "ami_id" {
 variable "key_name" {
   description = "Name of the SSH key pair for EC2 access"
   type        = string
-  default     = "my-terraform-key"
+  default     = "eac-ssh-key"
+}
+
+variable "ssh_user" {
+  description = "Name of the user for SSH into the ec2 instances"
+  type        = map(string)
+  default = {
+    bastion_user = "ubuntu"
+    app_db_user  = "ec2-user"
+  }
 }
 
 variable "allowed_ssh_cidr" {
@@ -131,6 +146,9 @@ variable "alb_config" {
     listener_port              = optional(number)
     protocol                   = optional(string)
     health_check_path          = optional(string)
+    health_check_port          = optional(string)
+    health_check_protocol      = optional(string)
+    idle_timeout               = optional(string)
     certificate_arn            = optional(string)
   })
 
@@ -146,3 +164,5 @@ variable "alb_config" {
     certificate_arn            = ""
   }
 }
+
+

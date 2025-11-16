@@ -1,7 +1,7 @@
 locals {
-  is_alb  = var.load_balancer_type == "application"
-  is_nlb  = var.load_balancer_type == "network"
-  is_gwlb = var.load_balancer_type == "gateway"
+  is_alb  = var.load_balancer_type == var.elb_type["alb"]
+  is_nlb  = var.load_balancer_type == var.elb_type["nlb"]
+  is_gwlb = var.load_balancer_type == var.elb_type["gwlb"]
 }
 
 resource "aws_lb" "this" {
