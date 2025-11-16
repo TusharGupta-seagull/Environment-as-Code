@@ -59,39 +59,12 @@ resource "time_sleep" "wait_for_instances" {
   create_duration = "120s"
 }
 
-# Test SSH connectivity to bastion
-resource "null_resource" "test_ssh_connectivity" {
-  depends_on = [time_sleep.wait_for_instances]
-
-  triggers = {
-    bastion_ip = module.bastion_instances[0].public_ip
-  }
-
-  provisioner "local-exec" {
-    command = <<EOT
-      echo "Testing SSH to bastion at ${module.bastion_instances[0].public_ip}..."
-      max_retries=5
-      count=0
-      until ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -i ${local.ssh_key_path} ${var.ssh_user.bastion_user}@${module.bastion_instances[0].public_ip} 'echo "Bastion SSH successful!"'; do
-        count=$((count+1))
-        if [ $count -ge $max_retries ]; then
-          echo "SSH failed after $max_retries attempts"
-          exit 1
-        fi
-        echo "SSH attempt $count failed, retrying in 10 seconds..."
-        sleep 10
-      done
-      echo "SSH test completed successfully"
-    EOT
-  }
-}
 
 # RUN ANSIBLE PLAYBOOK
 resource "null_resource" "run_ansible_playbook" {
 
   depends_on = [
     time_sleep.wait_for_instances,
-    null_resource.test_ssh_connectivity,
     module.alb
   ]
 
