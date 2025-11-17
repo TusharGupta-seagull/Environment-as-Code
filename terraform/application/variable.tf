@@ -1,131 +1,120 @@
-variable "project_name" {
-  description = "Name of the project, used for resource naming"
-  type        = string
-  default     = "EAC"
+locals {
+  project_config = var.project_config
+}
+# PROJECT CONFIG
+variable "project_config" {
+  description = "Project-level parameters (project name, env, tags)"
+  type = object({
+    project_name = string
+    env_name     = string
+    tags         = map(string)
+  })
 }
 
-variable "env_name" {
-  description = "Environment name (e.g., dev, staging, prod)"
-  type        = string
-  default     = "dev"
-}
 
-variable "tags" {
-  description = "Common tags to apply to all resources"
-  type        = map(string)
-  default = {
-    Terraform   = "true"
-    Environment = "dev"
-    Project     = "EAC"
-  }
-}
-
+# EC2 CONFIG
 variable "ec2_config" {
+  description = "User-supplied EC2 configuration. Networking is handled separately."
   type = object({
     bastion = object({
-      subnet_id = string
-      sg_ids    = list(string)
-      count     = number
+      count                       = number
+      instance_type               = optional(string)
+      ami_id                      = optional(string)
+      user_data                   = optional(string)
+      availability_zone           = optional(string)
+      associate_public_ip_address = optional(bool)
+      root_block_device = optional(object({
+        delete_on_termination = optional(bool)
+        volume_type           = optional(string)
+        volume_size           = optional(number)
+        encrypted             = optional(bool)
+      }))
     })
 
     app = object({
-      subnet_id = string
-      sg_ids    = list(string)
-      count     = number
-      user_data = optional(string)
+      count                       = number
+      instance_type               = optional(string)
+      ami_id                      = optional(string)
+      user_data                   = optional(string)
+      availability_zone           = optional(string)
+      associate_public_ip_address = optional(bool)
+      root_block_device = optional(object({
+        delete_on_termination = optional(bool)
+        volume_type           = optional(string)
+        volume_size           = optional(number)
+        encrypted             = optional(bool)
+      }))
     })
 
     db = object({
-      subnet_id = string
-      sg_ids    = list(string)
-      count     = number
-
+      count                       = number
+      instance_type               = optional(string)
+      ami_id                      = optional(string)
+      user_data                   = optional(string)
+      availability_zone           = optional(string)
+      associate_public_ip_address = optional(bool)
+      root_block_device = optional(object({
+        delete_on_termination = optional(bool)
+        volume_type           = optional(string)
+        volume_size           = optional(number)
+        encrypted             = optional(bool)
+      }))
     })
     key_name = string
   })
-  default = {
-    bastion = {
-      subnet_id = "" 
-      sg_ids    = [] 
-      count     = 1  
-
-    }
-
-    app = {
-      subnet_id = "" 
-      sg_ids    = [] 
-      count     = 2  
-      user_data = ""
-    }
-
-    db = {
-      subnet_id = "" 
-      sg_ids    = []
-      count     = 1 
-    }
-
-    key_name = ""
-  }
 }
 
-# ALB 
-variable "create_alb" {
-  description = "Whether to create an Application Load Balancer"
-  type        = bool
-  default     = true
-}
 
+# ALB CONFIG 
 variable "alb_config" {
-  description = "Settings and infrastructure inputs for ALB"
-
+  description = "Application Load Balancer config"
   type = object({
-    settings = object({
+    create_alb = bool
+    settings = optional(object({
       name                       = optional(string)
       load_balancer_type         = optional(string)
       internal                   = optional(bool)
       enable_deletion_protection = optional(bool)
-
-      target_port = optional(number)
-      target_type = optional(string)
-
-      listener_port = optional(number)
-      protocol      = optional(string)
-
-      health_check_path     = optional(string)
-      health_check_port     = optional(string)
-      health_check_protocol = optional(string)
-
-      idle_timeout    = optional(number)
-      certificate_arn = optional(string)
-    })
-
-    infra = object({
-      vpc_id          = string
-      subnets         = list(string)
-      security_groups = list(string)
-    })
+      target_port                = optional(number)
+      target_type                = optional(string)
+      listener_port              = optional(number)
+      protocol                   = optional(string)
+      health_check_path          = optional(string)
+      certificate_arn            = optional(string)
+    }), null)
   })
 
   default = {
-    settings = {
-      name                       = null
-      load_balancer_type         = "application"
-      internal                   = false
-      enable_deletion_protection = false
-      target_port = 80
-      target_type = "instance"
-      listener_port = 80
-      protocol      = "HTTP"
-      health_check_path     = "/"
-      certificate_arn = ""
-    }
-
-    infra = {
-      vpc_id          = ""
-      subnets         = []
-      security_groups = []
-      target_instance_ids=[]
-      user_data = ""
-    }
+    create_alb = false
+    settings   = null
   }
+}
+
+# EC2 NETWORK CONFIG
+variable "ec2_network_config" {
+  description = "EC2 networking dependencies (subnet IDs and security groups)"
+  type = object({
+    bastion = object({
+      subnet_id = string
+      sg_ids    = list(string)
+    })
+    app = object({
+      subnet_id = string
+      sg_ids    = list(string)
+    })
+    db = object({
+      subnet_id = string
+      sg_ids    = list(string)
+    })
+  })
+}
+
+# ALB NETWORK CONFIG
+variable "alb_network_config" {
+  description = "ALB networking dependencies (VPC, subnets, SG IDs)"
+  type = object({
+    vpc_id          = string
+    subnets         = list(string)
+    security_groups = list(string)
+  })
 }

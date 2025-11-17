@@ -44,7 +44,7 @@ output "db_instances" {
 output "load_balancer" {
   description = "Application Load Balancer details"
   value = {
-    enabled          = var.create_alb
+    enabled          = local.alb_config.create_alb
     arn              = try(module.alb[0].lb_arn, null)
     dns_name         = try(module.alb[0].lb_dns_name, null)
     zone_id          = try(module.alb[0].lb_zone_id, null)

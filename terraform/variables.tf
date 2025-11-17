@@ -7,30 +7,20 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "project_name" {
-  description = "Name of the project, used for resource naming"
-  type        = string
-  default     = "EAC"
+variable "project_config" {
+  type = any
+}
+variable "network_config" {
+  type = any
 }
 
-variable "env_name" {
-  description = "Environment name (e.g., dev, staging, prod)"
-  type        = string
-  default     = "dev"
+variable "ec2_config" {
+  type = any
 }
 
-variable "tags" {
-  description = "Common tags to apply to all resources"
-  type        = map(string)
-  default = {
-    Terraform   = "true"
-    Environment = "dev"
-    Project     = "EAC"
-  }
+variable "alb_config" {
+  type = any
 }
-
-
-
 # variable "ec2_config" {
 #   description = "Config for EC2 instances"
 #   type = map(object({
@@ -51,28 +41,3 @@ variable "tags" {
 #     }))
 #   }))
 # }
-
-variable "ami_id" {
-  description = "AMI ID for EC2 instances (leave null to use latest Amazon Linux 2023)"
-  type        = string
-  default     = null
-}
-
-variable "key_name" {
-  description = "Name of the SSH key pair for EC2 access"
-  type        = string
-  default     = "eac-ssh-key"
-}
-
-
-
-variable "allowed_ssh_cidr" {
-  description = "CIDR block allowed to SSH into EC2 instances"
-  type        = string
-  default     = "0.0.0.0/0"
-}
-variable "create_alb" {
-  description = "Whether to create an Application Load Balancer"
-  type        = bool
-  default     = true
-}

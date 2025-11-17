@@ -1,7 +1,6 @@
 locals {
   ssh_key_path = abspath("${path.module}../../ansible/${var.key_name}.pem")
 
-  # ALL application module outputs grouped neatly
   application = {
     bastion_public_ip = var.application_instance_ips.bastion_public_ip
     app_private_ips   = var.application_instance_ips.app_private_ips

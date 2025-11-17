@@ -1,13 +1,16 @@
-# Security Groups Module
+locals {
+  create_alb       = var.network_config.settings.create_alb
+  allowed_ssh_cidr = var.network_config.settings.allowed_ssh_cidr
+}
 
 ## Security Group for Application Load Balancer
 module "alb_security_group" {
   source = "../_modules/network/security_group"
 
-  project_name   = var.project_name
-  env_name       = var.env_name
-  create_sg      = var.create_alb
-  sg_name        = "${var.project_name}-${var.env_name}-alb-sg"
+  project_name   = local.project_config.project_name
+  env_name       = local.project_config.env_name
+  create_sg      = local.create_alb
+  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-alb-sg"
   sg_description = "Security group for Application Load Balancer"
   sg_vpc_id      = module.vpc.vpc_id
 
@@ -38,7 +41,7 @@ module "alb_security_group" {
     }
   }
 
-  tags = var.tags
+  tags = local.project_config.tags
   sg_tags = {
     Component = "load-balancer"
   }
@@ -48,10 +51,10 @@ module "alb_security_group" {
 module "bastion_security_group" {
   source = "../_modules/network/security_group"
 
-  project_name   = var.project_name
-  env_name       = var.env_name
+  project_name   = local.project_config.project_name
+  env_name       = local.project_config.env_name
   create_sg      = true
-  sg_name        = "${var.project_name}-${var.env_name}-bastion-sg"
+  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-bastion-sg"
   sg_description = "Security group for Bastion Host"
   sg_vpc_id      = module.vpc.vpc_id
 
@@ -60,7 +63,7 @@ module "bastion_security_group" {
       from_port   = 22
       to_port     = 22
       ip_protocol = "tcp"
-      cidr_ipv4   = var.allowed_ssh_cidr
+      cidr_ipv4   = local.allowed_ssh_cidr
       description = "Allow SSH access from anywhere"
     }
   }
@@ -75,7 +78,7 @@ module "bastion_security_group" {
     }
   }
 
-  tags = var.tags
+  tags = local.project_config.tags
   sg_tags = {
     Component = "bastion-host"
   }
@@ -86,10 +89,10 @@ module "bastion_security_group" {
 module "app_security_group" {
   source = "../_modules/network/security_group"
 
-  project_name   = var.project_name
-  env_name       = var.env_name
+  project_name   = local.project_config.project_name
+  env_name       = local.project_config.env_name
   create_sg      = true
-  sg_name        = "${var.project_name}-${var.env_name}-app-sg"
+  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-app-sg"
   sg_description = "Security group for Application instances"
   sg_vpc_id      = module.vpc.vpc_id
 
@@ -128,7 +131,7 @@ module "app_security_group" {
     }
   }
 
-  tags = var.tags
+  tags = local.project_config.tags
   sg_tags = {
     Component = "app-servers"
   }
@@ -137,10 +140,10 @@ module "app_security_group" {
 module "db_security_group" {
   source = "../_modules/network/security_group"
 
-  project_name   = var.project_name
-  env_name       = var.env_name
+  project_name   = local.project_config.project_name
+  env_name       = local.project_config.env_name
   create_sg      = true
-  sg_name        = "${var.project_name}-${var.env_name}-db-sg"
+  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-db-sg"
   sg_description = "Security group for Database instances"
   sg_vpc_id      = module.vpc.vpc_id
 
@@ -171,7 +174,7 @@ module "db_security_group" {
     }
   }
 
-  tags = var.tags
+  tags = local.project_config.tags
   sg_tags = {
     Component = "db-servers"
   }

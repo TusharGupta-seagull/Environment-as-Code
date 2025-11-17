@@ -4,11 +4,7 @@
 output "deployment_summary" {
   description = "Comprehensive deployment summary"
   value = {
-    project = {
-      name        = var.project_name
-      environment = var.env_name
-      region      = var.aws_region
-    }
+    project = local.project_config
     infrastructure = {
       vpc_id          = module.network.vpc.id
       public_subnets  = length(module.network.subnets.public)
@@ -16,7 +12,7 @@ output "deployment_summary" {
       bastion_hosts   = length(module.application_instances.bastion_instances)
       app_servers     = length(module.application_instances.app_instances)
       db_servers      = length(module.application_instances.db_instances)
-      load_balancer   = var.create_alb ? "Enabled" : "Disabled"
+      load_balancer   = var.alb_config.create_alb ? "Enabled" : "Disabled"
     }
     connectivity = {
       bastion_public_ip      = try(module.application_instances.bastion_instances[0].public_ip, null)
@@ -25,7 +21,7 @@ output "deployment_summary" {
     }
     security = {
       ssh_key_name     = aws_key_pair.ansible_key.key_name
-      allowed_ssh_cidr = var.allowed_ssh_cidr
+      allowed_ssh_cidr = var.network_config.settings.allowed_ssh_cidr
     }
   }
 }

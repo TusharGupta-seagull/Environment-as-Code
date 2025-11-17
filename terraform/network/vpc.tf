@@ -1,17 +1,31 @@
-# VPC Module
+locals {
+  vpc = {
+    cidr = var.network_config.vpc.cidr
+  }
+  subnets = {
+    public  = var.network_config.subnets.public
+    private = var.network_config.subnets.private
+  }
+  network_settings = {
+    map_public_ip_on_launch = var.network_config.settings.map_public_ip_on_launch
+    create_alb              = var.network_config.settings.create_alb
+    allowed_ssh_cidr        = var.network_config.settings.allowed_ssh_cidr
+  }
+
+  nat_subnet_cidr  = var.network_config.subnets.public[0].cidr
+  cidr_all_traffic = "0.0.0.0/0"
+}
+
 module "vpc" {
   source = "../_modules/network/vpc"
 
-  project_name = var.project_name
-  env_name     = var.env_name
-  vpc_cidr     = var.vpc_cidr
-
-  pub_cidrs               = var.public_subnets
-  priv_cidrs              = var.private_subnets
-  map_public_ip_on_launch = var.map_public_ip_on_launch
-
-  nat_gateway_subnet_cidr = var.public_subnets[0].cidr
-  cidr_all_traffic        = "0.0.0.0/0"
-
-  tags = var.tags
+  project_name            = local.project_config.project_name
+  env_name                = local.project_config.env_name
+  vpc_cidr                = local.vpc.cidr
+  pub_cidrs               = local.subnets.public
+  priv_cidrs              = local.subnets.private
+  map_public_ip_on_launch = local.network_settings.map_public_ip_on_launch
+  nat_gateway_subnet_cidr = local.nat_subnet_cidr
+  cidr_all_traffic        = local.cidr_all_traffic
+  tags                    = local.project_config.tags
 }
