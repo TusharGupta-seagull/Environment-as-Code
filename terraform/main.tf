@@ -43,7 +43,6 @@ module "application_instances" {
       instance_type = "t3.micro"
       subnet_id     = module.network.subnets.private.ids[0]
       sg_ids        = [module.network.security_groups.app.id]
-      user_data = file("${path.module}/test/script-1.sh")
 
     },
     db = {

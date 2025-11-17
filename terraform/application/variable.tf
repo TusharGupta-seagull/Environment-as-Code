@@ -32,7 +32,7 @@ variable "ec2_config" {
       subnet_id = string
       sg_ids    = list(string)
       count     = number
-      user_data = string
+      user_data = optional(string)
     })
 
     db = object({
@@ -45,30 +45,30 @@ variable "ec2_config" {
   })
   default = {
     bastion = {
-      subnet_id = "" # to be overridden
-      sg_ids    = [] # to be overridden
-      count     = 1  # DEFAULT VALUE
+      subnet_id = "" 
+      sg_ids    = [] 
+      count     = 1  
 
     }
 
     app = {
-      subnet_id = "" # to be overridden
-      sg_ids    = [] # to be overridden
-      count     = 2  # DEFAULT VALUE
+      subnet_id = "" 
+      sg_ids    = [] 
+      count     = 2  
       user_data = ""
     }
 
     db = {
-      subnet_id = "" # to be overridden
-      sg_ids    = [] # to be overridden
-      count     = 1  # DEFAULT VALUE
+      subnet_id = "" 
+      sg_ids    = []
+      count     = 1 
     }
 
-    key_name = "" # to be overridden
+    key_name = ""
   }
 }
 
-# ALB =======================================================================
+# ALB 
 variable "create_alb" {
   description = "Whether to create an Application Load Balancer"
   type        = bool
