@@ -7,7 +7,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-# Project Configuration
 variable "project_name" {
   description = "Name of the project, used for resource naming"
   type        = string
@@ -30,54 +29,6 @@ variable "tags" {
   }
 }
 
-variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "map_public_ip_on_launch" {
-  description = "Whether to map public IP addresses on launch for public subnets"
-  type        = map(bool)
-  default = {
-    pub_sub  = true
-    priv_sub = false
-  }
-}
-
-variable "public_subnets" {
-  description = "List of public subnet configurations"
-  type = list(object({
-    cidr       = string
-    avail_zone = optional(string)
-  }))
-  default = [
-    {
-      cidr       = "10.0.1.0/24"
-      avail_zone = "us-east-1a"
-    },
-    {
-      cidr       = "10.0.2.0/24"
-      avail_zone = "us-east-1b"
-    }
-  ]
-}
-
-variable "private_subnets" {
-  description = "List of private subnet configurations"
-  type = list(object({
-    cidr             = string
-    enable_nat_route = bool
-    avail_zone       = optional(string)
-  }))
-  default = [
-    {
-      cidr             = "10.0.10.0/24"
-      enable_nat_route = true
-      avail_zone       = "us-east-1b"
-    }
-  ]
-}
 
 
 # variable "ec2_config" {
@@ -113,56 +64,15 @@ variable "key_name" {
   default     = "eac-ssh-key"
 }
 
-variable "ssh_user" {
-  description = "Name of the user for SSH into the ec2 instances"
-  type        = map(string)
-  default = {
-    bastion_user = "ubuntu"
-    app_db_user  = "ec2-user"
-  }
-}
+
 
 variable "allowed_ssh_cidr" {
   description = "CIDR block allowed to SSH into EC2 instances"
   type        = string
   default     = "0.0.0.0/0"
 }
-
 variable "create_alb" {
   description = "Whether to create an Application Load Balancer"
   type        = bool
   default     = true
 }
-
-variable "alb_config" {
-  description = "Configuration for the Application Load Balancer"
-  type = object({
-    name                       = optional(string)
-    load_balancer_type         = optional(string)
-    internal                   = optional(bool)
-    enable_deletion_protection = optional(bool)
-    target_port                = optional(number)
-    target_type                = optional(string)
-    listener_port              = optional(number)
-    protocol                   = optional(string)
-    health_check_path          = optional(string)
-    health_check_port          = optional(string)
-    health_check_protocol      = optional(string)
-    idle_timeout               = optional(string)
-    certificate_arn            = optional(string)
-  })
-
-  default = {
-    load_balancer_type         = "application"
-    internal                   = false
-    enable_deletion_protection = false
-    target_port                = 80
-    target_type                = "instance"
-    listener_port              = 80
-    protocol                   = "HTTP"
-    health_check_path          = "/"
-    certificate_arn            = ""
-  }
-}
-
-
