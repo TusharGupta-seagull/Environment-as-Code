@@ -1,7 +1,13 @@
+## 1. EC2_CONFIG
+## 2. ALB_CONFIG
+
+# -----------------------------------------------------------------------------------------
+
+# 1. EC2_CONFIG
 ec2_config = {
   bastion = {
-    count                       = 1
-    instance_type               = "t3.micro"
+    count         = 1
+    instance_type = "t3.micro"
 
     ami_id                      = null
     user_data                   = null
@@ -17,8 +23,8 @@ ec2_config = {
   }
 
   app = {
-    count                       = 2
-    instance_type               = "t3.micro"
+    count         = 2
+    instance_type = "t3.micro"
 
     ami_id                      = null
     user_data                   = null
@@ -34,8 +40,8 @@ ec2_config = {
   }
 
   db = {
-    count                       = 1
-    instance_type               = "t3.micro"
+    count         = 1
+    instance_type = "t3.micro"
 
     ami_id                      = null
     user_data                   = null
@@ -49,10 +55,12 @@ ec2_config = {
       encrypted             = true
     }
   }
-  key_name  = "eac-dev-key"
+  key_name = "eac-dev-key"
 }
 
+# ----------------------------------------------------------------------------------------
 
+# 2. ALB_CONFIG
 alb_config = {
   create_alb = true
 
@@ -62,12 +70,12 @@ alb_config = {
     internal                   = false
     enable_deletion_protection = false
 
-    target_port                = 80
-    target_type                = "instance"
-    listener_port              = 80
-    protocol                   = "HTTP"
+    target_port   = 80
+    target_type   = "instance"
+    listener_port = 80
+    protocol      = "HTTP"
 
-    health_check_path          = "/"
-    certificate_arn            = ""
+    health_check_path = "/"
+    certificate_arn   = ""
   }
 }

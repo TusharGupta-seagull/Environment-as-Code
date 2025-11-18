@@ -40,7 +40,6 @@ resource "local_file" "ssh_config" {
       app_db_user       = var.ssh_user.app_db_user
     }
   )
-
   file_permission = "0644"
 }
 
@@ -56,7 +55,6 @@ resource "null_resource" "run_ansible_playbook" {
 
   depends_on = [
   time_sleep.wait_for_instances]
-
   triggers = {
     bastion_ip = local.application.bastion_public_ip
     app_ips    = join(",", local.application.app_private_ips)

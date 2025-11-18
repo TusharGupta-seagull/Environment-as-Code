@@ -61,15 +61,15 @@ module "application_instances" {
   depends_on = [module.network, aws_key_pair.ansible_key]
 }
 
-# module "ansible-config" {
-#   source = "./config-mgmt"
-#   application_instance_ips = {
-#     app_private_ips   = [for ins in module.application_instances.app_instances : ins.private_ip]
-#     db_private_ips    = [for ins in module.application_instances.db_instances : ins.private_ip]
-#     bastion_public_ip = module.application_instances.bastion_instances[0].public_ip
-#   }
-#   depends_on = [
-#     module.application_instances
-#   ]
-# }
+module "ansible-config" {
+  source = "./config-mgmt"
+  application_instance_ips = {
+    app_private_ips   = [for ins in module.application_instances.app_instances : ins.private_ip]
+    db_private_ips    = [for ins in module.application_instances.db_instances : ins.private_ip]
+    bastion_public_ip = module.application_instances.bastion_instances[0].public_ip
+  }
+  depends_on = [
+    module.application_instances
+  ]
+}
 
