@@ -17,10 +17,14 @@ variable "network_config" {
 variable "ec2_config" {
   type = any
 }
+variable "rds_config" {
+  type = any
+}
 
 variable "alb_config" {
   type = any
 }
+
 # variable "ec2_config" {
 #   description = "Config for EC2 instances"
 #   type = map(object({

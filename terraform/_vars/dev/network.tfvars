@@ -24,8 +24,14 @@ network_config = {
       {
         cidr             = "10.0.10.0/24"
         enable_nat_route = true
+        avail_zone       = "us-east-1a"
+      },
+      {
+        cidr             = "10.0.11.0/24"
+        enable_nat_route = false
         avail_zone       = "us-east-1b"
       }
+
     ]
   }
 

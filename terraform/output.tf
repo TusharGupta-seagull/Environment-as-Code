@@ -11,7 +11,7 @@ output "deployment_summary" {
       private_subnets = length(module.network.subnets.private)
       bastion_hosts   = length(module.application_instances.bastion_instances)
       app_servers     = length(module.application_instances.app_instances)
-      db_servers      = length(module.application_instances.db_instances)
+      db_servers      = length(module.database)
       load_balancer   = var.alb_config.create_alb ? "Enabled" : "Disabled"
     }
     connectivity = {

@@ -4,7 +4,7 @@
 
 # 1. PROJECT_CONFIG
 project_config = {  
-  project_name = "EAC"
+  project_name = "eac"
   env_name     = "dev"
 
   tags = {

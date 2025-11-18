@@ -61,6 +61,18 @@ module "application_instances" {
   depends_on = [module.network, aws_key_pair.ansible_key]
 }
 
+# RDS Instance DB
+module "database" {
+  source         = "./databse"
+  project_config = var.project_config
+  rds_config     = var.rds_config
+  rds_network_config = {
+    security_group_ids = [module.network.security_groups.db.id]
+    subnet_ids         = module.network.subnets.private.ids
+  }
+  depends_on = [module.network]
+}
+
 module "ansible-config" {
   source = "./config-mgmt"
   application_instance_ips = {
