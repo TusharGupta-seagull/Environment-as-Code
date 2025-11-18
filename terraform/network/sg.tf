@@ -179,3 +179,47 @@ module "db_security_group" {
     Component = "db-servers"
   }
 }
+
+
+module "rds_security_group" {
+  source = "../_modules/network/security_group"
+
+  project_name   = local.project_config.project_name
+  env_name       = local.project_config.env_name
+  create_sg      = true
+  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-rds-sg"
+  sg_description = "Security group for RDS instance"
+  sg_vpc_id      = module.vpc.vpc_id
+
+  sg_ingress_rules = {
+    db_bastion = {
+      from_port                    = 3306
+      to_port                      = 3306
+      ip_protocol                  = "tcp"
+      referenced_security_group_id = module.bastion_security_group.security_group_id
+      description                  = "Allow SQL CLI access from Bastion Host"
+    }
+    db = {
+      from_port                    = 3306
+      to_port                      = 3306
+      ip_protocol                  = "tcp"
+      referenced_security_group_id = module.app_security_group.security_group_id
+      description                  = "Allow DB access from App SG"
+    }
+  }
+
+  sg_egress_rules = {
+    all_traffic = {
+      from_port   = -1
+      to_port     = -1
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+      description = "Allow all outbound traffic"
+    }
+  }
+
+  tags = local.project_config.tags
+  sg_tags = {
+    Component = "db-servers"
+  }
+}

@@ -68,7 +68,7 @@ module "database" {
   project_config = var.project_config
   rds_config     = var.rds_config
   rds_network_config = {
-    security_group_ids = [module.network.security_groups.db.id]
+    security_group_ids = [module.network.security_groups.rds.id]
     subnet_ids         = module.network.subnets.private.ids
   }
   depends_on = [module.network]

@@ -40,7 +40,7 @@ ec2_config = {
   }
 
   db = {
-    count         = 1
+    count         = 0
     instance_type = "t3.micro"
 
     ami_id                      = null

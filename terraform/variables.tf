@@ -28,6 +28,7 @@ variable "alb_config" {
 variable "go_ansibe" {
   type    = bool
   default = false
+
 }
 
 # variable "ec2_config" {

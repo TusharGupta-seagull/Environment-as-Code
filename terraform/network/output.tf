@@ -53,5 +53,9 @@ output "security_groups" {
       id   = module.alb_security_group.security_group_id
       name = module.alb_security_group.security_group_name
     }
+    rds = {
+      id   = module.rds_security_group.security_group_id
+      name = module.rds_security_group.security_group_name
+    }
   }
 }
