@@ -4,6 +4,7 @@ locals {
   network_config = var.network_config
   ec2_config     = var.ec2_config
   alb_config     = var.alb_config
+  go_ansibe      = var.go_ansibe
 }
 resource "tls_private_key" "ssh_key_gen" {
   algorithm = "RSA"
@@ -75,13 +76,15 @@ module "database" {
 
 module "ansible-config" {
   source = "./config-mgmt"
+  count  = local.go_ansibe ? 1 : 0
+
   application_instance_ips = {
-    app_private_ips   = [for ins in module.application_instances.app_instances : ins.private_ip]
-    db_private_ips    = [for ins in module.application_instances.db_instances : ins.private_ip]
-    bastion_public_ip = module.application_instances.bastion_instances[0].public_ip
+    app_private_ips   = try([for ins in module.application_instances.app_instances : ins.private_ip], [])
+    db_private_ips    = try([for ins in module.application_instances.db_instances : ins.private_ip], [])
+    bastion_public_ip = try(module.application_instances.bastion_instances[0].public_ip, null)
   }
+
   depends_on = [
     module.application_instances
   ]
 }
-

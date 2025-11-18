@@ -25,6 +25,11 @@ variable "alb_config" {
   type = any
 }
 
+variable "go_ansibe" {
+  type    = bool
+  default = false
+}
+
 # variable "ec2_config" {
 #   description = "Config for EC2 instances"
 #   type = map(object({

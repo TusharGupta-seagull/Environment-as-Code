@@ -14,3 +14,6 @@ project_config = {
     Owner       = "SgAlpha"
   }
 }
+
+# For Ansible
+go_ansible = false
