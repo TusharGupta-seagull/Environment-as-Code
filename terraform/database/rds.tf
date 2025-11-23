@@ -5,7 +5,7 @@ locals {
 
     settings = {
       identifier            = lookup(var.rds_config.setting, "identifier", "${var.project_config.project_name}-${var.project_config.env_name}-rds")
-      db_name              = lookup(var.rds_config.setting, "db_name", "myDB")
+      db_name               = lookup(var.rds_config.setting, "db_name", "myDB")
       engine                = lookup(var.rds_config.setting, "engine", "mariards")
       engine_version        = lookup(var.rds_config.setting, "engine_version", "11.4.8")
       instance_class        = lookup(var.rds_config.setting, "instance_class", "rds.t3.micro")
