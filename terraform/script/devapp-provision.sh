@@ -78,8 +78,10 @@ sudo systemctl status ssh-agent --no-pager
 echo "Creating S3 sync script..."
 sudo tee /usr/local/bin/sync-war-files.sh > /dev/null << 'EOF'
 #! /usr/bin/env bash
-S3_BUCKET="your-app-bucket"
-S3_FOLDER="webapps"
+
+S3_BUCKET="brewQuery-terraform-bucket"
+S3_FOLDER="Dev/Application/tomcat/webapps/"
+
 LOCAL_DIR="/home/devuser/tomcat/webapps"
 TEMP_DIR="/tmp/war_sync"
 LOG_FILE="/var/log/war-sync.log"
