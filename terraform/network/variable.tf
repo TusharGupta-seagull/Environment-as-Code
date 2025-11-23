@@ -1,10 +1,12 @@
 locals {
   project_config = var.project_config
+  name_prefix = "${var.project_config.project_name}-${var.project_config.env_name}"
 }
 
 variable "project_config" {
   type = any
 }
+
 variable "network_config" {
   description = "Complete network configuration including VPC, subnets, SG settings"
   type = object({

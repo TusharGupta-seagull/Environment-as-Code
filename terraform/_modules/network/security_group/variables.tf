@@ -3,16 +3,10 @@ variable "create_sg" {
   type        = bool
   default     = true
 }
-variable "project_name" {
-  description = "Name of the project, used for resource naming"
-  type        = string
-  default     = "EAC"
-}
 
-variable "env_name" {
-  description = "Environment name (e.g., dev, staging, prod)"
+variable "name_prefix" {
+  description = "Prefix for naming Security Group resources"
   type        = string
-  default     = "dev"
 }
 
 variable "sg_name" {

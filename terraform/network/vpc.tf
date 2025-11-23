@@ -19,8 +19,7 @@ locals {
 module "vpc" {
   source = "../_modules/network/vpc"
 
-  project_name            = local.project_config.project_name
-  env_name                = local.project_config.env_name
+  name_prefix             = local.name_prefix
   vpc_cidr                = local.vpc.cidr
   pub_cidrs               = local.subnets.public
   priv_cidrs              = local.subnets.private

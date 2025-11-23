@@ -9,6 +9,8 @@ locals {
 
   priv_subnets_with_nat = local.nat_required ? local.priv_nat_connected_subnet : []
   priv_subnets_isolated = [for s in var.priv_cidrs : s.cidr if !s.enable_nat_route || !local.nat_required]
+
+  name_prefix = var.name_prefix
 }
 
 # VPC configurations ----------------------------------------------------
@@ -16,7 +18,7 @@ resource "aws_vpc" "this" {
   cidr_block = var.vpc_cidr
 
   tags = merge(var.tags, {
-    "Name" = "${var.project_name}-${var.env_name}-vpc"
+    "Name" = "${local.name_prefix}-vpc"
   })
 }
 
@@ -25,7 +27,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.this.id
 
   tags = {
-    "Name" = "${var.project_name}-${var.env_name}-igw"
+    "Name" = "${local.name_prefix}-igw"
   }
 }
 
@@ -45,7 +47,7 @@ resource "aws_nat_gateway" "nat" {
   depends_on = [aws_internet_gateway.igw]
 
   tags = merge(var.tags, {
-    "Name" = "${var.project_name}-${var.env_name}-nat"
+    "Name" = "${local.name_prefix}-nat"
   })
 }
 
@@ -61,7 +63,7 @@ resource "aws_subnet" "pub_sub" {
   map_public_ip_on_launch = var.map_public_ip_on_launch.pub_sub
 
   tags = {
-    "Name" = "${var.project_name}-${var.env_name}-pub-${each.key}"
+    "Name" = "${local.name_prefix}-pub-${each.key}"
   }
 }
 
@@ -75,7 +77,7 @@ resource "aws_subnet" "priv_sub" {
   map_public_ip_on_launch = var.map_public_ip_on_launch.priv_sub
 
   tags = {
-    "Name" = "${var.project_name}-${var.env_name}-priv-${each.key}"
+    "Name" = "${local.name_prefix}-priv-${each.key}"
   }
 }
 
@@ -92,7 +94,7 @@ resource "aws_route_table" "pub_rt" {
   depends_on = [aws_internet_gateway.igw]
 
   tags = merge(var.tags, {
-    "Name" = "${var.project_name}-${var.env_name}-pub-rt"
+    "Name" = "${local.name_prefix}-pub-rt"
   })
 }
 
@@ -105,11 +107,11 @@ resource "aws_route_table" "priv_rt_isolated" {
   # NO INTERNET TRAFFIC
 
   tags = merge(var.tags, {
-    "Name" = "${var.project_name}-${var.env_name}-priv-rt-isolated"
+    "Name" = "${local.name_prefix}-priv-rt-isolated"
   })
 }
 
-# private subnet - rt - NAT connected 
+# private subnet - rt - NAT connected
 resource "aws_route_table" "priv_rt_nat" {
   count = length(local.priv_subnets_with_nat) > 0 ? 1 : 0
 
@@ -123,7 +125,7 @@ resource "aws_route_table" "priv_rt_nat" {
   depends_on = [aws_nat_gateway.nat]
 
   tags = merge(var.tags, {
-    "Name" = "${var.project_name}-${var.env_name}-priv-rt-nat"
+    "Name" = "${local.name_prefix}-priv-rt-nat"
   })
 }
 

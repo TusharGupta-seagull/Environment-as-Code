@@ -7,10 +7,9 @@ locals {
 module "alb_security_group" {
   source = "../_modules/network/security_group"
 
-  project_name   = local.project_config.project_name
-  env_name       = local.project_config.env_name
+  name_prefix    = local.name_prefix
   create_sg      = local.create_alb
-  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-alb-sg"
+  sg_name        = "${local.name_prefix}-alb-sg"
   sg_description = "Security group for Application Load Balancer"
   sg_vpc_id      = module.vpc.vpc_id
 
@@ -51,10 +50,10 @@ module "alb_security_group" {
 module "bastion_security_group" {
   source = "../_modules/network/security_group"
 
-  project_name   = local.project_config.project_name
-  env_name       = local.project_config.env_name
+  name_prefix = local.name_prefix
+
   create_sg      = true
-  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-bastion-sg"
+  sg_name        = "${local.name_prefix}-bastion-sg"
   sg_description = "Security group for Bastion Host"
   sg_vpc_id      = module.vpc.vpc_id
 
@@ -89,10 +88,9 @@ module "bastion_security_group" {
 module "app_security_group" {
   source = "../_modules/network/security_group"
 
-  project_name   = local.project_config.project_name
-  env_name       = local.project_config.env_name
+  name_prefix    = local.name_prefix
   create_sg      = true
-  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-app-sg"
+  sg_name        = "${local.name_prefix}-app-sg"
   sg_description = "Security group for Application instances"
   sg_vpc_id      = module.vpc.vpc_id
 
@@ -137,13 +135,13 @@ module "app_security_group" {
   }
 }
 
+# Security group for Database instances
 module "db_security_group" {
   source = "../_modules/network/security_group"
 
-  project_name   = local.project_config.project_name
-  env_name       = local.project_config.env_name
+  name_prefix    = local.name_prefix
   create_sg      = true
-  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-db-sg"
+  sg_name        = "${local.name_prefix}-db-sg"
   sg_description = "Security group for Database instances"
   sg_vpc_id      = module.vpc.vpc_id
 
@@ -180,14 +178,13 @@ module "db_security_group" {
   }
 }
 
-
+# Security group for RDS instance
 module "rds_security_group" {
   source = "../_modules/network/security_group"
 
-  project_name   = local.project_config.project_name
-  env_name       = local.project_config.env_name
+  name_prefix    = local.name_prefix
   create_sg      = true
-  sg_name        = "${local.project_config.project_name}-${local.project_config.env_name}-rds-sg"
+  sg_name        = "${local.name_prefix}-rds-sg"
   sg_description = "Security group for RDS instance"
   sg_vpc_id      = module.vpc.vpc_id
 

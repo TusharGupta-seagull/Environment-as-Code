@@ -1,5 +1,5 @@
 
-resource "aws_security_group" "main" {
+resource "aws_security_group" "this" {
   count = var.create_sg ? 1 : 0
 
   name        = var.sg_name != null ? var.sg_name : "default-sg"
@@ -9,14 +9,14 @@ resource "aws_security_group" "main" {
   tags = merge(
     var.tags,
     var.sg_tags,
-    { "Name" = "${var.project_name}-${var.env_name}-vpc" }
+    { "Name" = "${var.name_prefix}-sg"}
   )
 }
 
 resource "aws_vpc_security_group_ingress_rule" "this" {
   for_each = var.create_sg && var.sg_ingress_rules != null ? var.sg_ingress_rules : {}
 
-  security_group_id = aws_security_group.main[0].id
+  security_group_id = aws_security_group.this[0].id
 
   cidr_ipv4                    = each.value.cidr_ipv4
   from_port                    = each.value.from_port
@@ -32,7 +32,7 @@ resource "aws_vpc_security_group_ingress_rule" "this" {
 resource "aws_vpc_security_group_egress_rule" "this" {
   for_each = var.create_sg && length(var.sg_egress_rules) > 0 ? var.sg_egress_rules : {}
 
-  security_group_id = aws_security_group.main[0].id
+  security_group_id = aws_security_group.this[0].id
 
   cidr_ipv4                    = each.value.cidr_ipv4
   from_port                    = each.value.from_port
