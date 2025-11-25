@@ -2,6 +2,18 @@ locals {
   is_alb  = var.load_balancer_type == var.elb_type["alb"]
   is_nlb  = var.load_balancer_type == var.elb_type["nlb"]
   is_gwlb = var.load_balancer_type == var.elb_type["gwlb"]
+
+  http_target_group_arn = var.create_target_group ? aws_lb_target_group.this[0].arn : (
+    try(var.target_groups.http.target_group_arn, null) != null
+    ? var.target_groups.http.target_group_arn
+    : lookup(var.target_group_arns, "http", { arn = "" }).arn
+  )
+
+  https_target_group_arn = var.create_target_group ? aws_lb_target_group.this[0].arn : (
+    try(var.target_groups.https.target_group_arn, null) != null
+    ? var.target_groups.https.target_group_arn
+    : lookup(var.target_group_arns, "https", { arn = "" }).arn
+  )
 }
 
 resource "aws_lb" "this" {
@@ -20,6 +32,8 @@ resource "aws_lb" "this" {
 }
 
 resource "aws_lb_target_group" "this" {
+  count = var.create_target_group ? 1 : 0
+
   name        = "${var.name_prefix}-tg"
   port        = var.target_port
   protocol    = local.is_gwlb ? "GENEVE" : var.protocol
@@ -52,7 +66,7 @@ resource "aws_lb_listener" "http" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.this.arn
+    target_group_arn = local.http_target_group_arn
   }
 }
 
@@ -66,14 +80,14 @@ resource "aws_lb_listener" "https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.this.arn
+    target_group_arn = local.https_target_group_arn
   }
 }
 
 resource "aws_lb_target_group_attachment" "this" {
-  count = local.is_gwlb ? 0 : length(var.target_instance_ids)
+  count = var.create_target_group && !local.is_gwlb ? length(var.target_instance_ids) : 0
 
-  target_group_arn = aws_lb_target_group.this.arn
+  target_group_arn = aws_lb_target_group.this[0].arn
   target_id        = var.target_instance_ids[count.index]
   port             = var.target_port
 }

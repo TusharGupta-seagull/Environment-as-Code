@@ -96,5 +96,25 @@ variable "elb_type" {
     "nlb"  = "network",
     "gwlb" = "gateway"
   }
+}
 
+variable "target_groups" {
+  description = "Map of target group modules to use with listeners"
+  type        = any
+  default     = {}
+}
+
+variable "target_group_arns" {
+  description = "Map of target group ARNs to use with listeners"
+  type = map(object({
+    arn      = string
+    protocol = string
+  }))
+  default = {}
+}
+
+variable "create_target_group" {
+  description = "Whether to create a target group or use existing ones"
+  type        = bool
+  default     = false
 }
