@@ -7,7 +7,6 @@ locals {
 module "alb_security_group" {
   source = "../_modules/network/security_group"
 
-  name_prefix    = local.name_prefix
   create_sg      = local.create_alb
   sg_name        = "${local.name_prefix}-alb-sg"
   sg_description = "Security group for Application Load Balancer"
@@ -50,8 +49,6 @@ module "alb_security_group" {
 module "bastion_security_group" {
   source = "../_modules/network/security_group"
 
-  name_prefix = local.name_prefix
-
   create_sg      = true
   sg_name        = "${local.name_prefix}-bastion-sg"
   sg_description = "Security group for Bastion Host"
@@ -88,7 +85,6 @@ module "bastion_security_group" {
 module "app_security_group" {
   source = "../_modules/network/security_group"
 
-  name_prefix    = local.name_prefix
   create_sg      = true
   sg_name        = "${local.name_prefix}-app-sg"
   sg_description = "Security group for Application instances"
@@ -139,7 +135,6 @@ module "app_security_group" {
 module "db_security_group" {
   source = "../_modules/network/security_group"
 
-  name_prefix    = local.name_prefix
   create_sg      = true
   sg_name        = "${local.name_prefix}-db-sg"
   sg_description = "Security group for Database instances"
@@ -182,7 +177,6 @@ module "db_security_group" {
 module "rds_security_group" {
   source = "../_modules/network/security_group"
 
-  name_prefix    = local.name_prefix
   create_sg      = true
   sg_name        = "${local.name_prefix}-rds-sg"
   sg_description = "Security group for RDS instance"

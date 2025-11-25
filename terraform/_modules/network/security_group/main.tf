@@ -9,7 +9,7 @@ resource "aws_security_group" "this" {
   tags = merge(
     var.tags,
     var.sg_tags,
-    { "Name" = "${var.name_prefix}-sg"}
+    { "Name" = var.sg_name != null ? var.sg_name : "default-sg" }
   )
 }
 

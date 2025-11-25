@@ -73,7 +73,7 @@ module "bastion_instances" {
   count  = local.ec2_config.bastion.count
 
   create = true
-  name   = "${var.project_config.project_name}-${var.project_config.env_name}-bastion-host"
+  name   = "${local.name_prefix}-bastion-${count.index + 1}"
 
   instance_type               = local.ec2_config.bastion.instance_type
   subnet_id                   = local.ec2_config.bastion.subnet_id

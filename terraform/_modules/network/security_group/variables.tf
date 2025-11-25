@@ -4,11 +4,6 @@ variable "create_sg" {
   default     = true
 }
 
-variable "name_prefix" {
-  description = "Prefix for naming Security Group resources"
-  type        = string
-}
-
 variable "sg_name" {
   description = "Name to be used on Security Group"
   type        = string

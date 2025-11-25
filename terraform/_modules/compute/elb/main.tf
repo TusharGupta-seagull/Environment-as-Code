@@ -5,7 +5,7 @@ locals {
 }
 
 resource "aws_lb" "this" {
-  name               = var.name
+  name               = "${var.name_prefix}-lb"
   internal           = var.internal
   load_balancer_type = var.load_balancer_type
   subnets            = var.subnets
@@ -15,12 +15,12 @@ resource "aws_lb" "this" {
   drop_invalid_header_fields = local.is_alb ? true : null
 
   tags = merge(var.tags, {
-    "Name" = "${var.project_name}-${var.env_name}-alb"
+    "Name" = "${var.name_prefix}-lb"
   })
 }
 
 resource "aws_lb_target_group" "this" {
-  name        = "${var.name}-tg"
+  name        = "${var.name_prefix}-tg"
   port        = var.target_port
   protocol    = local.is_gwlb ? "GENEVE" : var.protocol
   vpc_id      = var.vpc_id
@@ -40,7 +40,7 @@ resource "aws_lb_target_group" "this" {
 
   tags = merge(
     var.tags,
-    { "Name" = "${var.project_name}-${var.env_name}-tg" }
+    { "Name" = "${var.name_prefix}-tg" }
   )
 }
 

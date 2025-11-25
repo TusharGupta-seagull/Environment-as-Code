@@ -1,5 +1,7 @@
 locals {
   project_config = var.project_config
+
+  name_prefix = "${local.project_config.project_name}-${local.project_config.env_name}"
 }
 # PROJECT CONFIG
 variable "project_config" {

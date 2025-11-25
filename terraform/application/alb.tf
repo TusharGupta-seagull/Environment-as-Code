@@ -6,7 +6,11 @@ locals {
 
     # settings with lookup() and defaults
     settings = {
-      name                       = lookup(var.alb_config.settings, "name", "${local.project_config.project_name}-${local.project_config.env_name}-alb")
+      name = lookup(
+        var.alb_config.settings, "name",
+        "${local.name_prefix}-${lookup(var.alb_config.settings, "internal", false) ? "internal" : "public"}"
+      )
+
       load_balancer_type         = lookup(var.alb_config.settings, "load_balancer_type", "application")
       internal                   = lookup(var.alb_config.settings, "internal", false)
       enable_deletion_protection = lookup(var.alb_config.settings, "enable_deletion_protection", false)
@@ -21,7 +25,8 @@ locals {
   }
 }
 
-module "alb" {
+# Internet-facing ALB NETWORK CONFIG
+module "public-alb" {
   source = "../_modules/compute/elb"
   count  = local.alb_config.create_alb ? 1 : 0
 
@@ -32,7 +37,7 @@ module "alb" {
   security_groups = lookup(var.alb_network_config, "security_groups", [])
 
   # SETTINGS (lookup-safe)
-  name                       = lookup(local.alb_config.settings, "name", null)
+  name_prefix                = lookup(local.alb_config.settings, "name", null)
   load_balancer_type         = lookup(local.alb_config.settings, "load_balancer_type", "application")
   internal                   = lookup(local.alb_config.settings, "internal", false)
   enable_deletion_protection = lookup(local.alb_config.settings, "enable_deletion_protection", false)
