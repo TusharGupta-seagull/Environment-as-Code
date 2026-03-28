@@ -1,7 +1,6 @@
 locals {
   project_config = var.project_config
-
-  name_prefix = "${local.project_config.project_name}-${local.project_config.env_name}"
+  name_prefix    = "${local.project_config.project_name}-${local.project_config.env_name}"
 }
 # PROJECT CONFIG
 variable "project_config" {
@@ -12,7 +11,6 @@ variable "project_config" {
     tags         = map(string)
   })
 }
-
 
 # EC2 CONFIG
 variable "ec2_config" {
@@ -67,7 +65,7 @@ variable "ec2_config" {
 }
 
 
-# ALB CONFIG 
+# ALB CONFIG
 variable "alb_config" {
   description = "Application Load Balancer config"
   type = object({
@@ -101,12 +99,8 @@ variable "ec2_network_config" {
       sg_ids    = list(string)
     })
     app = object({
-      subnet_id = string
-      sg_ids    = list(string)
-    })
-    db = object({
-      subnet_id = string
-      sg_ids    = list(string)
+      subnet_ids = list(string)
+      sg_ids     = list(string)
     })
   })
 }
@@ -119,4 +113,16 @@ variable "alb_network_config" {
     subnets         = list(string)
     security_groups = list(string)
   })
+}
+
+variable "services" {
+  description = "Application services running behind ALB"
+  type = map(object({
+    port          = number
+    health_path   = string
+    instance_type = optional(string)
+    min_size      = number
+    max_size      = number
+    desired       = number
+  }))
 }

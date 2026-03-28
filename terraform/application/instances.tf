@@ -97,7 +97,7 @@ module "app_instances" {
   count  = local.ec2_config.app.count
 
   create = true
-  name   = "${var.project_config.project_name}-${var.project_config.env_name}-app-${count.index + 1}"
+  name   = "${local.name_prefix}-app-${count.index + 1}"
 
   instance_type               = local.ec2_config.app.instance_type
   subnet_id                   = local.ec2_config.app.subnet_id
@@ -121,7 +121,7 @@ module "db_instances" {
   count  = local.ec2_config.db.count
 
   create = true
-  name   = "${var.project_config.project_name}-${var.project_config.env_name}-db-${count.index + 1}"
+  name   = "${local.name_prefix}-db-${count.index + 1}"
 
   instance_type               = local.ec2_config.db.instance_type
   subnet_id                   = local.ec2_config.db.subnet_id

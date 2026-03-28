@@ -99,10 +99,18 @@ variable "elb_type" {
 }
 
 variable "target_groups" {
-  description = "Map of target group modules to use with listeners"
-  type        = any
-  default     = {}
+  description = "Target groups for listeners"
+  type = object({
+    http = optional(object({
+      target_group_arn = string
+    }))
+    https = optional(object({
+      target_group_arn = string
+    }))
+  })
+  default = {}
 }
+
 
 variable "target_group_arns" {
   description = "Map of target group ARNs to use with listeners"

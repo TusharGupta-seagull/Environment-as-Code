@@ -14,7 +14,7 @@ locals {
 resource "aws_db_subnet_group" "rds" {
   count = var.db_create_rds ? 1 : 0
 
-  name       = "${var.db_identifier}"
+  name       = var.db_identifier
   subnet_ids = var.db_subnet_ids
 
   tags = merge(

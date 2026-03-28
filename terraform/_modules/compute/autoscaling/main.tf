@@ -53,7 +53,7 @@ resource "aws_launch_template" "this" {
 }
 
 # Autoscaling Group
-  resource "aws_autoscaling_group" "this" {
+resource "aws_autoscaling_group" "this" {
   count = local.create ? 1 : 0
 
   name                      = "${var.name_prefix}-asg"

@@ -31,6 +31,19 @@ variable "go_ansibe" {
 
 }
 
+variable "services" {
+  description = "Configuration for different services/part of application (e.g., auth, judge, cart, etc.)"
+  type = map(object({
+    port          = number
+    instance_type = string
+    min_size      = number
+    max_size      = number
+    desired       = number
+    health_path   = string
+  }))
+}
+
+
 # variable "ec2_config" {
 #   description = "Config for EC2 instances"
 #   type = map(object({

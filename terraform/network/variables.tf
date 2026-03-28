@@ -1,6 +1,6 @@
 locals {
   project_config = var.project_config
-  name_prefix = "${var.project_config.project_name}-${var.project_config.env_name}"
+  name_prefix    = "${var.project_config.project_name}-${var.project_config.env_name}"
 }
 
 variable "project_config" {

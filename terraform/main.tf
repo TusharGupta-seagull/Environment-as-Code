@@ -29,13 +29,15 @@ module "network" {
   network_config = local.network_config
 }
 
-# Application Instances -> APP, DB, BASTION, LB
-module "application_instances" {
+# Application Instances -> APP, BASTION
+module "application" {
   source = "./application"
 
   project_config = var.project_config
-  ec2_config     = local.ec2_config
-  alb_config     = local.alb_config
+  ec2_config     = var.ec2_config
+  alb_config     = var.alb_config
+  services       = var.services
+
   ec2_network_config = {
     bastion = {
       subnet_id = module.network.subnets.public.ids[0]
@@ -43,13 +45,8 @@ module "application_instances" {
     }
 
     app = {
-      subnet_id = module.network.subnets.private.ids[0]
-      sg_ids    = [module.network.security_groups.app.id]
-    }
-
-    db = {
-      subnet_id = module.network.subnets.private.ids[0]
-      sg_ids    = [module.network.security_groups.db.id]
+      subnet_ids = module.network.subnets.private.ids
+      sg_ids     = [module.network.security_groups.app.id]
     }
   }
 
@@ -62,9 +59,10 @@ module "application_instances" {
   depends_on = [module.network, aws_key_pair.ansible_key]
 }
 
+
 # RDS Instance DB
 module "database" {
-  source         = "./databse"
+  source         = "./database"
   project_config = var.project_config
   rds_config     = var.rds_config
   rds_network_config = {

@@ -1,7 +1,7 @@
 variable "create" {
   description = "Flag to create the Auto Scaling Group"
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
 }
 
 variable "name_prefix" {
@@ -11,17 +11,17 @@ variable "name_prefix" {
 
 variable "subnet_ids" {
   description = "List of subnet IDs for the Auto Scaling Group"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "security_group_ids" {
   description = "List of security group IDs for the instances"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "target_group_arns" {
   description = "List of target group ARNs to attach to the Auto Scaling Group"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "ami_id" {
@@ -38,19 +38,19 @@ variable "ami_id_ssm_parameter" {
 
 variable "instance_type" {
   description = "EC2 instance type"
-  type = string
+  type        = string
 }
 
 variable "key_name" {
   description = "Key pair name for SSH access"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "iam_instance_profile" {
   description = "IAM instance profile name"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "user_data" {
@@ -61,29 +61,29 @@ variable "user_data" {
 
 variable "min_size" {
   description = "Minimum size of the Auto Scaling Group"
-  type = number
+  type        = number
 }
 
 variable "max_size" {
   description = "Maximum size of the Auto Scaling Group"
-  type = number
+  type        = number
 }
 
 variable "desired_capacity" {
   description = "Desired capacity of the Auto Scaling Group"
-  type = number
+  type        = number
 }
 
 variable "health_check_type" {
   description = "Health check type for the Auto Scaling Group"
-  type    = string
-  default = "ELB"
+  type        = string
+  default     = "ELB"
 }
 
 variable "health_check_grace_period" {
   description = "Health check grace period in seconds"
-  type    = number
-  default = 300
+  type        = number
+  default     = 300
 }
 
 variable "cpu_target_value" {
@@ -106,8 +106,8 @@ variable "memory_high_threshold" {
 
 variable "tags" {
   description = "Tags to apply to all resources"
-  type    = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "instance_tags" {

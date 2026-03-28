@@ -3,17 +3,9 @@ locals {
   is_nlb  = var.load_balancer_type == var.elb_type["nlb"]
   is_gwlb = var.load_balancer_type == var.elb_type["gwlb"]
 
-  http_target_group_arn = var.create_target_group ? aws_lb_target_group.this[0].arn : (
-    try(var.target_groups.http.target_group_arn, null) != null
-    ? var.target_groups.http.target_group_arn
-    : lookup(var.target_group_arns, "http", { arn = "" }).arn
-  )
+  http_target_group_arn = var.create_target_group ? aws_lb_target_group.http[0].arn : var.target_groups.http.target_group_arn
 
-  https_target_group_arn = var.create_target_group ? aws_lb_target_group.this[0].arn : (
-    try(var.target_groups.https.target_group_arn, null) != null
-    ? var.target_groups.https.target_group_arn
-    : lookup(var.target_group_arns, "https", { arn = "" }).arn
-  )
+  https_target_group_arn = var.create_target_group ? aws_lb_target_group.https[0].arn : var.target_groups.https.target_group_arn
 }
 
 resource "aws_lb" "this" {
@@ -84,10 +76,11 @@ resource "aws_lb_listener" "https" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "this" {
-  count = var.create_target_group && !local.is_gwlb ? length(var.target_instance_ids) : 0
+# Not required for ASG since it can register targets directly
+# resource "aws_lb_target_group_attachment" "this" {
+#   count = var.create_target_group && !local.is_gwlb ? length(var.target_instance_ids) : 0
 
-  target_group_arn = aws_lb_target_group.this[0].arn
-  target_id        = var.target_instance_ids[count.index]
-  port             = var.target_port
-}
+#   target_group_arn = aws_lb_target_group.this[0].arn
+#   target_id        = var.target_instance_ids[count.index]
+#   port             = var.target_port
+# }

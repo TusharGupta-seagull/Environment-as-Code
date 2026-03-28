@@ -21,90 +21,90 @@ variable "db_create_rds" {
 }
 
 variable "db_identifier" {
-  type        = string
-  default     = "eac-db"
+  type    = string
+  default = "eac-db"
 }
 
 variable "db_name" {
-  type        = string
-  default     = "appdb"
+  type    = string
+  default = "appdb"
 }
 
 variable "db_engine" {
-  type        = string
-  default     = "mariadb"
+  type    = string
+  default = "mariadb"
 }
 
 variable "db_engine_version" {
-  type        = string
-  default     = "11.4.8"
+  type    = string
+  default = "11.4.8"
 }
 
 variable "db_instance_class" {
-  type        = string
-  default     = "db.t3.micro"
+  type    = string
+  default = "db.t3.micro"
 }
 
 variable "db_allocated_storage" {
-  type        = number
-  default     = 20
+  type    = number
+  default = 20
 }
 
 variable "db_max_allocated_storage" {
-  type        = number
-  default     = null
+  type    = number
+  default = null
 }
 
 variable "db_storage_type" {
-  type        = string
-  default     = "gp3"
+  type    = string
+  default = "gp3"
 }
 
 variable "db_port" {
-  type        = number
-  default     = 3306
+  type    = number
+  default = 3306
 }
 
 variable "db_publicly_accessible" {
-  type        = bool
-  default     = false
+  type    = bool
+  default = false
 }
 
 variable "db_skip_final_snapshot" {
-  type        = bool
-  default     = true
+  type    = bool
+  default = true
 }
 
 variable "db_backup_retention_period" {
-  type        = number
-  default     = 7
+  type    = number
+  default = 7
 }
 
 variable "db_backup_window" {
-  type        = string
-  default     = "03:00-04:00"
+  type    = string
+  default = "03:00-04:00"
 }
 
 variable "db_maintenance_window" {
-  type        = string
-  default     = "sun:03:00-sun:04:00"
+  type    = string
+  default = "sun:03:00-sun:04:00"
 }
 
 
 
 variable "db_username" {
-  type        = string
-  default     = "admin"
+  type    = string
+  default = "admin"
 }
 
 variable "db_password" {
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
 }
 
 variable "db_password_ssm_parameter" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 
