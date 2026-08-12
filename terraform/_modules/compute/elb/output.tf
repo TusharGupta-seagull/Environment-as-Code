@@ -24,23 +24,23 @@ output "lb_arn_suffix" {
 }
 
 output "target_group_id" {
-  description = "ID of the target group"
-  value       = aws_lb_target_group.this.id
+  description = "ID of the target group (null when using an existing target group)"
+  value       = var.create_target_group ? aws_lb_target_group.this[0].id : null
 }
 
 output "target_group_arn" {
-  description = "ARN of the target group"
-  value       = aws_lb_target_group.this.arn
+  description = "ARN of the target group (created or provided)"
+  value       = var.create_target_group ? aws_lb_target_group.this[0].arn : try(var.target_groups.http.target_group_arn, null)
 }
 
 output "target_group_arn_suffix" {
-  description = "ARN suffix of the target group"
-  value       = aws_lb_target_group.this.arn_suffix
+  description = "ARN suffix of the target group (null when using an existing target group)"
+  value       = var.create_target_group ? aws_lb_target_group.this[0].arn_suffix : null
 }
 
 output "target_group_name" {
-  description = "Name of the target group"
-  value       = aws_lb_target_group.this.name
+  description = "Name of the target group (null when using an existing target group)"
+  value       = var.create_target_group ? aws_lb_target_group.this[0].name : null
 }
 
 output "http_listener_arn" {

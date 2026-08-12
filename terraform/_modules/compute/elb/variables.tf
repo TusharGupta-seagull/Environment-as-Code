@@ -41,12 +41,6 @@ variable "enable_deletion_protection" {
   default     = false
 }
 
-variable "target_instance_ids" {
-  description = "List of target instance IDs (for ALB/NLB)"
-  type        = list(string)
-  default     = []
-}
-
 variable "target_port" {
   description = "Target port"
   type        = number
@@ -111,15 +105,6 @@ variable "target_groups" {
   default = {}
 }
 
-
-variable "target_group_arns" {
-  description = "Map of target group ARNs to use with listeners"
-  type = map(object({
-    arn      = string
-    protocol = string
-  }))
-  default = {}
-}
 
 variable "create_target_group" {
   description = "Whether to create a target group or use existing ones"

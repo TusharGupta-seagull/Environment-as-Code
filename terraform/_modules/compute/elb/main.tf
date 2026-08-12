@@ -3,9 +3,8 @@ locals {
   is_nlb  = var.load_balancer_type == var.elb_type["nlb"]
   is_gwlb = var.load_balancer_type == var.elb_type["gwlb"]
 
-  http_target_group_arn = var.create_target_group ? aws_lb_target_group.http[0].arn : var.target_groups.http.target_group_arn
-
-  https_target_group_arn = var.create_target_group ? aws_lb_target_group.https[0].arn : var.target_groups.https.target_group_arn
+  # This module creates a single target group; the HTTPS listener forwards to it too.
+  http_target_group_arn = var.create_target_group ? aws_lb_target_group.this[0].arn : var.target_groups.http.target_group_arn
 }
 
 resource "aws_lb" "this" {
@@ -67,12 +66,12 @@ resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.this.arn
   port              = 443
   protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2021-06"
   certificate_arn   = var.certificate_arn
 
   default_action {
     type             = "forward"
-    target_group_arn = local.https_target_group_arn
+    target_group_arn = local.http_target_group_arn
   }
 }
 
