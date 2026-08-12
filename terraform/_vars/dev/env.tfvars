@@ -15,5 +15,6 @@ project_config = {
   }
 }
 
-# For Ansible
-go_ansible = false
+# For Ansible - runs the bastion provisioning playbook after apply
+# (requires ansible-playbook on the machine running terraform apply)
+go_ansible = true
