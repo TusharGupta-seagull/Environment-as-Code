@@ -9,7 +9,8 @@ ec2_config = {
     count         = 1
     instance_type = "t3.micro"
 
-    ami_id                      = null
+    # AMI is NOT configurable: the bastion always runs Amazon Linux (AL2023 via SSM).
+    # The golden image is reserved exclusively for the ASG launch template (see services.tfvars).
     user_data                   = null
     availability_zone           = null
     associate_public_ip_address = true
@@ -22,39 +23,6 @@ ec2_config = {
     }
   }
 
-  app = {
-    count         = 2
-    instance_type = "t3.micro"
-
-    ami_id                      = null
-    user_data                   = null
-    availability_zone           = null
-    associate_public_ip_address = false
-
-    root_block_device = {
-      delete_on_termination = true
-      volume_type           = "gp3"
-      volume_size           = 10
-      encrypted             = true
-    }
-  }
-
-  db = {
-    count         = 0
-    instance_type = "t3.micro"
-
-    ami_id                      = null
-    user_data                   = null
-    availability_zone           = null
-    associate_public_ip_address = false
-
-    root_block_device = {
-      delete_on_termination = true
-      volume_type           = "gp3"
-      volume_size           = 10
-      encrypted             = true
-    }
-  }
   key_name = "eac-dev-key"
 }
 
@@ -70,12 +38,9 @@ alb_config = {
     internal                   = false
     enable_deletion_protection = false
 
-    target_port   = 80
-    target_type   = "instance"
     listener_port = 80
     protocol      = "HTTP"
 
-    health_check_path = "/"
-    certificate_arn   = ""
+    certificate_arn = ""
   }
 }
