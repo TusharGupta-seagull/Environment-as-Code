@@ -57,9 +57,9 @@ module "alb" {
   create_target_group = false
 
   # Default TG → first service (usually "app")
-  target_group_arns = {
+  target_groups = {
     http = {
-      arn = values(module.target_groups)[0].target_group_arn
+      target_group_arn = values(module.target_groups)[0].target_group_arn
     }
   }
 
