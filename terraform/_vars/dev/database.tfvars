@@ -21,10 +21,14 @@ rds_config = {
     maintenance_window      = "sun:01:00-sun:02:00"
   }
 
+  # Password precedence (root main.tf):
+  #   1. TF_VAR_db_password env var set on the Jenkins agent (e.g., fetched from Vault)
+  #   2. An existing SSM SecureString parameter (db_password_ssm_parameter)
+  #   3. Terraform generates a random password and stores it in SSM (SecureString)
+  # No plaintext secrets live in this repo.
   credentials = {
-    username               = "admin"
-    password               = "StrongPassword123!" # OR leave "" when using SSM
-    password_ssm_parameter = null                 # e.g. "/eac/dev/db/password"
+    username = "admin"
+    password = ""
   }
 }
 
