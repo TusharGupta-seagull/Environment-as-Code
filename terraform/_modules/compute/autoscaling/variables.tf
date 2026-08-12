@@ -25,13 +25,7 @@ variable "target_group_arns" {
 }
 
 variable "ami_id" {
-  description = "Golden AMI ID (highest priority)"
-  type        = string
-  default     = null
-}
-
-variable "ami_id_ssm_parameter" {
-  description = "SSM parameter name for fallback AMI resolution"
+  description = "Golden AMI ID — required; the launch template uses the golden image only"
   type        = string
   default     = null
 }
@@ -86,6 +80,18 @@ variable "health_check_grace_period" {
   default     = 300
 }
 
+variable "instance_warmup" {
+  description = "Time (seconds) to wait for a new instance to become healthy during instance refresh"
+  type        = number
+  default     = 120
+}
+
+variable "min_healthy_percentage" {
+  description = "Minimum percentage of the ASG that must remain healthy during instance refresh"
+  type        = number
+  default     = 90
+}
+
 variable "cpu_target_value" {
   description = "Target CPU utilization percentage"
   type        = number
@@ -114,3 +120,4 @@ variable "instance_tags" {
   type    = map(string)
   default = {}
 }
+
