@@ -1,11 +1,6 @@
 locals {
   create_instance = var.create
 
-  ami = try(coalesce(
-    var.ami_id,
-    try(nonsensitive(data.aws_ssm_parameter.ami[0].value), null)
-  ), null)
-
   tags = merge(
     var.tags,
     var.instance_tags,
@@ -13,9 +8,11 @@ locals {
   )
 }
 
-data "aws_ssm_parameter" "ami" {
-  count = local.create_instance && var.ami_id == null ? 1 : 0
-  name  = var.ami_id_ssm_parameter
+module "ami" {
+  source = "../ami"
+
+  ami_id               = var.ami_id
+  ami_id_ssm_parameter = var.ami_id_ssm_parameter
 }
 
 
@@ -34,7 +31,7 @@ resource "aws_instance" "main" {
 
   associate_public_ip_address = var.associate_public_ip_address
 
-  ami               = local.ami
+  ami               = module.ami.resolved_ami_id
   instance_type     = var.instance_type
   key_name          = var.key_name
   subnet_id         = var.subnet_id
@@ -56,7 +53,6 @@ resource "aws_instance" "main" {
 
   tags = local.tags
 
-  lifecycle {
-    ignore_changes = [ami]
-  }
+  # No ignore_changes on `ami`: a golden AMI / SSM update shows up in the plan
+  # and replaces this instance, so AMI rollouts are visible and deliberate.
 }

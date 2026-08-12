@@ -3,17 +3,6 @@ variable "create" {
   type        = bool
   default     = true
 }
-variable "project_name" {
-  description = "Name of the project, used for resource naming"
-  type        = string
-  default     = "EAC"
-}
-
-variable "env_name" {
-  description = "Environment name (e.g., dev, staging, prod)"
-  type        = string
-  default     = "dev"
-}
 
 variable "name" {
   description = "Name to be used on EC2 instance"
@@ -38,12 +27,6 @@ variable "ami_id_ssm_parameter" {
   type        = string
   default     = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 }
-
-# variable "ami_id_ignore_changes" {
-#   description = "Flag to ignore changes to the AMI ID after creation"
-#   type        = bool
-#   default     = true
-# }
 
 variable "associate_public_ip_address" {
   description = "Whether to associate a public IP address with the instance"
