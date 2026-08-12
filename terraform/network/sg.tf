@@ -41,7 +41,7 @@ module "alb_security_group" {
 
   tags = local.project_config.tags
   sg_tags = {
-    Component = "load-balancer"
+    Component = "alb"
   }
 }
 
@@ -76,7 +76,7 @@ module "bastion_security_group" {
 
   tags = local.project_config.tags
   sg_tags = {
-    Component = "bastion-host"
+    Component = "bastion"
   }
 }
 
@@ -127,7 +127,7 @@ module "app_security_group" {
 
   tags = local.project_config.tags
   sg_tags = {
-    Component = "app-servers"
+    Component = "app"
   }
 }
 
@@ -169,7 +169,7 @@ module "db_security_group" {
 
   tags = local.project_config.tags
   sg_tags = {
-    Component = "db-servers"
+    Component = "db"
   }
 }
 
@@ -211,6 +211,6 @@ module "rds_security_group" {
 
   tags = local.project_config.tags
   sg_tags = {
-    Component = "db-servers"
+    Component = "rds"
   }
 }

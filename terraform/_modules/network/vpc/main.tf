@@ -18,7 +18,8 @@ resource "aws_vpc" "this" {
   cidr_block = var.vpc_cidr
 
   tags = merge(var.tags, {
-    "Name" = "${local.name_prefix}-vpc"
+    "Name"      = "${local.name_prefix}-vpc"
+    "Component" = "vpc"
   })
 }
 
@@ -26,9 +27,10 @@ resource "aws_vpc" "this" {
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.this.id
 
-  tags = {
-    "Name" = "${local.name_prefix}-igw"
-  }
+  tags = merge(var.tags, {
+    "Name"      = "${local.name_prefix}-igw"
+    "Component" = "igw"
+  })
 }
 
 # Nat gtw -------------------------------------------------------
@@ -36,6 +38,11 @@ resource "aws_internet_gateway" "igw" {
 resource "aws_eip" "nat_eip" {
   count  = local.nat_required ? 1 : 0
   domain = "vpc"
+
+  tags = merge(var.tags, {
+    "Name"      = "${local.name_prefix}-nat-eip"
+    "Component" = "nat-eip"
+  })
 }
 
 resource "aws_nat_gateway" "nat" {
@@ -47,7 +54,8 @@ resource "aws_nat_gateway" "nat" {
   depends_on = [aws_internet_gateway.igw]
 
   tags = merge(var.tags, {
-    "Name" = "${local.name_prefix}-nat"
+    "Name"      = "${local.name_prefix}-nat"
+    "Component" = "nat"
   })
 }
 
@@ -62,9 +70,10 @@ resource "aws_subnet" "pub_sub" {
 
   map_public_ip_on_launch = var.map_public_ip_on_launch.pub_sub
 
-  tags = {
-    "Name" = "${local.name_prefix}-pub-${each.key}"
-  }
+  tags = merge(var.tags, {
+    "Name"      = "${local.name_prefix}-pub-${each.key}"
+    "Component" = "subnet"
+  })
 }
 
 #private subnets
@@ -76,9 +85,10 @@ resource "aws_subnet" "priv_sub" {
   availability_zone       = each.value.avail_zone
   map_public_ip_on_launch = var.map_public_ip_on_launch.priv_sub
 
-  tags = {
-    "Name" = "${local.name_prefix}-priv-${each.key}"
-  }
+  tags = merge(var.tags, {
+    "Name"      = "${local.name_prefix}-priv-${each.key}"
+    "Component" = "subnet"
+  })
 }
 
 # Route tables -----------------------------------------------------------
@@ -94,7 +104,8 @@ resource "aws_route_table" "pub_rt" {
   depends_on = [aws_internet_gateway.igw]
 
   tags = merge(var.tags, {
-    "Name" = "${local.name_prefix}-pub-rt"
+    "Name"      = "${local.name_prefix}-pub-rt"
+    "Component" = "route-table"
   })
 }
 
@@ -107,7 +118,8 @@ resource "aws_route_table" "priv_rt_isolated" {
   # NO INTERNET TRAFFIC
 
   tags = merge(var.tags, {
-    "Name" = "${local.name_prefix}-priv-rt-isolated"
+    "Name"      = "${local.name_prefix}-priv-rt-isolated"
+    "Component" = "route-table"
   })
 }
 
@@ -125,7 +137,8 @@ resource "aws_route_table" "priv_rt_nat" {
   depends_on = [aws_nat_gateway.nat]
 
   tags = merge(var.tags, {
-    "Name" = "${local.name_prefix}-priv-rt-nat"
+    "Name"      = "${local.name_prefix}-priv-rt-nat"
+    "Component" = "route-table"
   })
 }
 

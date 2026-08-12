@@ -52,9 +52,6 @@ resource "aws_db_instance" "this" {
 
   tags = merge(
     var.project_tags,
-    {
-      Component = "database"
-      Type      = "rds"
-    }
+    { Component = "rds" }
   )
 }
