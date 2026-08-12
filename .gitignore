@@ -1,0 +1,8 @@
+.terraform/
+terraform.tfstate*
+**.env
+**node_modules
+**.pem
+
+ansible/inventory.ini
+ansible/ssh_config
