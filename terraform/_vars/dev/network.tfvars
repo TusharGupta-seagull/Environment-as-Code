@@ -12,11 +12,11 @@ network_config = {
     public = [
       {
         cidr       = "10.0.1.0/24"
-        avail_zone = "us-east-1a"
+        avail_zone = "ap-south-1a"
       },
       {
         cidr       = "10.0.2.0/24"
-        avail_zone = "us-east-1b"
+        avail_zone = "ap-south-1b"
       }
     ]
 
@@ -24,12 +24,12 @@ network_config = {
       {
         cidr             = "10.0.10.0/24"
         enable_nat_route = true
-        avail_zone       = "us-east-1a"
+        avail_zone       = "ap-south-1a"
       },
       {
         cidr             = "10.0.11.0/24"
         enable_nat_route = false
-        avail_zone       = "us-east-1b"
+        avail_zone       = "ap-south-1b"
       }
 
     ]
