@@ -1,12 +1,6 @@
 locals {
   create = var.create
 
-  # Golden AMI first -> fallback to SSM
-  ami = try(coalesce(
-    var.ami_id,
-    try(nonsensitive(data.aws_ssm_parameter.ami[0].value), null)
-  ), null)
-
   # Name prefix : EAC-dev-app1 (example)
   instance_tags = merge(
     var.tags,
@@ -15,10 +9,11 @@ locals {
   )
 }
 
-# AMI Resolution
-data "aws_ssm_parameter" "ami" {
-  count = local.create && var.ami_id == null && var.ami_id_ssm_parameter != null ? 1 : 0
-  name  = var.ami_id_ssm_parameter
+# AMI Resolution: the launch template uses the golden AMI only (no SSM fallback).
+module "ami" {
+  source = "../ami"
+
+  ami_id = var.ami_id
 }
 
 # Launch Template
@@ -26,7 +21,7 @@ resource "aws_launch_template" "this" {
   count = local.create ? 1 : 0
 
   name_prefix   = "${var.name_prefix}-lt-"
-  image_id      = local.ami
+  image_id      = module.ami.resolved_ami_id
   instance_type = var.instance_type
   key_name      = var.key_name
   user_data     = var.user_data
@@ -75,8 +70,8 @@ resource "aws_autoscaling_group" "this" {
     strategy = "Rolling"
 
     preferences {
-      min_healthy_percentage = 90
-      instance_warmup        = 300
+      min_healthy_percentage = var.min_healthy_percentage
+      instance_warmup        = var.instance_warmup
     }
 
     triggers = ["launch_template"]
@@ -92,6 +87,9 @@ resource "aws_autoscaling_group" "this" {
   }
 
   lifecycle {
+    # desired_capacity drift from ASG scaling actions is ignored (standard practice).
+    # Golden AMI rollouts still work: an ami change updates the launch template,
+    # which triggers the instance_refresh below.
     ignore_changes = [desired_capacity]
   }
 }

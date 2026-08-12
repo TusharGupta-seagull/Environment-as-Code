@@ -35,5 +35,5 @@ output "memory_alarm_name" {
 }
 
 output "resolved_ami_id" {
-  value = local.ami
+  value = module.ami.resolved_ami_id
 }
