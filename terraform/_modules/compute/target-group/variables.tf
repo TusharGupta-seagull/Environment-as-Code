@@ -50,6 +50,15 @@ variable "load_balancer_type" {
   }
 }
 
+variable "elb_type" {
+  type = map(string)
+  default = {
+    "alb"  = "application",
+    "nlb"  = "network",
+    "gwlb" = "gateway"
+  }
+}
+
 variable "deregistration_delay" {
   description = "Time in seconds for deregistration delay"
   type        = number
