@@ -98,8 +98,9 @@ variable "db_username" {
 }
 
 variable "db_password" {
-  type    = string
-  default = ""
+  type      = string
+  default   = ""
+  sensitive = true
 }
 
 variable "db_password_ssm_parameter" {

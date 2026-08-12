@@ -3,21 +3,21 @@ output "rds" {
   value = {
     enabled = local.rds_config.create_rds
 
-    identifier = try(module.rds_instance[0].identifier, null)
-    db_name    = try(module.rds_instance[0].db_name, null)
+    identifier = try(module.rds_instance.rds_db_name, null)
+    db_name    = try(module.rds_instance.rds_db_name, null)
 
-    endpoint = try(module.rds_instance[0].endpoint, null)
-    address  = try(module.rds_instance[0].address, null)
-    port     = try(module.rds_instance[0].port, null)
+    endpoint = try(module.rds_instance.rds_endpoint, null)
+    address  = try(module.rds_instance.rds_endpoint, null)
+    port     = try(module.rds_instance.rds_port, null)
 
-    username       = try(module.rds_instance[0].username, null)
-    engine         = try(module.rds_instance[0].engine, null)
-    engine_version = try(module.rds_instance[0].engine_version, null)
+    username       = try(module.rds_instance.rds_username, null)
+    engine         = try(module.rds_instance.rds_engine, null)
+    engine_version = try(module.rds_instance.rds_engine_version, null)
 
-    subnet_group    = try(module.rds_instance[0].subnet_group, null)
-    security_groups = try(module.rds_instance[0].security_group_ids, null)
+    subnet_group    = try(module.rds_instance.rds_subnet_group, null)
+    security_groups = try(module.rds_instance.rds_security_groups, null)
 
-    writer_connection_string = try("${module.rds_instance[0].address}:${module.rds_instance[0].port}", null)
-    mysql_cli                = try("mysql -h ${module.rds_instance[0].address} -P ${module.rds_instance[0].port} -u ${module.rds_instance[0].username} -p", null)
+    writer_connection_string = try("${module.rds_instance.rds_endpoint}:${module.rds_instance.rds_port}", null)
+    mysql_cli                = try("mysql -h ${module.rds_instance.rds_endpoint} -P ${module.rds_instance.rds_port} -u ${module.rds_instance.rds_username} -p", null)
   }
 }

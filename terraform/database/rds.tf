@@ -1,37 +1,36 @@
 locals {
   rds_config = {
-
-    create_rds = lookup(var.rds_config, "create_rds", false)
+    create_rds = var.rds_config.create_rds
 
     settings = {
-      identifier            = lookup(var.rds_config.setting, "identifier", "${var.project_config.project_name}-${var.project_config.env_name}-rds")
-      db_name               = lookup(var.rds_config.setting, "db_name", "myDB")
-      engine                = lookup(var.rds_config.setting, "engine", "mariards")
-      engine_version        = lookup(var.rds_config.setting, "engine_version", "11.4.8")
-      instance_class        = lookup(var.rds_config.setting, "instance_class", "rds.t3.micro")
-      allocated_storage     = lookup(var.rds_config.setting, "allocated_storage", 20)
-      max_allocated_storage = lookup(var.rds_config.setting, "max_allocated_storage", null)
-      storage_type          = lookup(var.rds_config.setting, "storage_type", "gp3")
-      port                  = lookup(var.rds_config.setting, "port", 3306)
-      publicly_accessible   = lookup(var.rds_config.setting, "publicly_accessible", false)
+      identifier            = var.rds_config.setting.identifier
+      db_name               = var.rds_config.setting.db_name
+      engine                = var.rds_config.setting.engine
+      engine_version        = var.rds_config.setting.engine_version
+      instance_class        = var.rds_config.setting.instance_class
+      allocated_storage     = var.rds_config.setting.allocated_storage
+      max_allocated_storage = var.rds_config.setting.max_allocated_storage
+      storage_type          = var.rds_config.setting.storage_type
+      port                  = var.rds_config.setting.port
+      publicly_accessible   = var.rds_config.setting.publicly_accessible
 
-      backup_retention_period = lookup(var.rds_config.setting, "backup_retention_period", null)
-      backup_window           = lookup(var.rds_config.setting, "backup_window", null)
-      maintenance_window      = lookup(var.rds_config.setting, "maintenance_window", null)
+      backup_retention_period = var.rds_config.setting.backup_retention_period
+      backup_window           = var.rds_config.setting.backup_window
+      maintenance_window      = var.rds_config.setting.maintenance_window
+      skip_final_snapshot     = var.rds_config.setting.skip_final_snapshot
     }
 
     credentials = {
-      username = lookup(var.rds_config.credentials, "username", null)
-      password = lookup(var.rds_config.credentials, "password", null)
+      username = var.rds_config.credentials.username
+      password = var.rds_config.credentials.password
     }
 
     network = {
-      subnet_ids         = lookup(var.rds_network_config, "subnet_ids", [])
-      security_group_ids = lookup(var.rds_network_config, "security_group_ids", [])
+      subnet_ids         = var.rds_network_config.subnet_ids
+      security_group_ids = var.rds_network_config.security_group_ids
     }
   }
-  tags = merge(var.project_config.tags,
-  { "type" = "rds-db-${var.project_config.project_name}" })
+  tags = merge(var.project_config.tags, { Component = "rds" })
 }
 
 
@@ -59,7 +58,7 @@ module "rds_instance" {
   db_backup_window           = local.rds_config.settings.backup_window
   db_maintenance_window      = local.rds_config.settings.maintenance_window
 
-  db_skip_final_snapshot = true
+  db_skip_final_snapshot = local.rds_config.settings.skip_final_snapshot
 
 
   db_username               = local.rds_config.credentials.username

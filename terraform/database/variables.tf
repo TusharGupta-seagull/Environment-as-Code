@@ -15,7 +15,7 @@ variable "rds_config" {
       storage_type            = optional(string)
       port                    = optional(number)
       publicly_accessible     = optional(bool)
-      skip_final_snapshot     = optional(string)
+      skip_final_snapshot     = optional(bool)
       backup_retention_period = optional(number)
       backup_window           = optional(string)
       maintenance_window      = optional(string)
