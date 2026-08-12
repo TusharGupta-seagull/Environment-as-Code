@@ -17,9 +17,9 @@ variable "ec2_config" {
   description = "User-supplied EC2 configuration. Networking is handled separately."
   type = object({
     bastion = object({
-      count                       = number
-      instance_type               = optional(string)
-      ami_id                      = optional(string)
+      count         = number
+      instance_type = optional(string)
+      # AMI is not configurable: the bastion always runs Amazon Linux (AL2023 via SSM)
       user_data                   = optional(string)
       availability_zone           = optional(string)
       associate_public_ip_address = optional(bool)
@@ -31,35 +31,6 @@ variable "ec2_config" {
       }))
     })
 
-    app = object({
-      count                       = number
-      instance_type               = optional(string)
-      ami_id                      = optional(string)
-      user_data                   = optional(string)
-      availability_zone           = optional(string)
-      associate_public_ip_address = optional(bool)
-      root_block_device = optional(object({
-        delete_on_termination = optional(bool)
-        volume_type           = optional(string)
-        volume_size           = optional(number)
-        encrypted             = optional(bool)
-      }))
-    })
-
-    db = object({
-      count                       = number
-      instance_type               = optional(string)
-      ami_id                      = optional(string)
-      user_data                   = optional(string)
-      availability_zone           = optional(string)
-      associate_public_ip_address = optional(bool)
-      root_block_device = optional(object({
-        delete_on_termination = optional(bool)
-        volume_type           = optional(string)
-        volume_size           = optional(number)
-        encrypted             = optional(bool)
-      }))
-    })
     key_name = string
   })
 }
@@ -75,11 +46,8 @@ variable "alb_config" {
       load_balancer_type         = optional(string)
       internal                   = optional(bool)
       enable_deletion_protection = optional(bool)
-      target_port                = optional(number)
-      target_type                = optional(string)
       listener_port              = optional(number)
       protocol                   = optional(string)
-      health_check_path          = optional(string)
       certificate_arn            = optional(string)
     }), null)
   })
@@ -116,13 +84,27 @@ variable "alb_network_config" {
 }
 
 variable "services" {
-  description = "Application services running behind ALB"
+  description = "Application services running behind the ALB. `ami_id` is the REQUIRED golden image — the ASG launch template uses it exclusively (no SSM fallback)"
   type = map(object({
-    port          = number
-    health_path   = string
-    instance_type = optional(string)
-    min_size      = number
-    max_size      = number
-    desired       = number
+    port                 = number
+    health_path          = string
+    instance_type        = optional(string)
+    ami_id               = string # REQUIRED: golden image from the build pipeline
+    user_data            = optional(string)
+    iam_instance_profile = optional(string)
+    min_size             = number
+    max_size             = number
+    desired              = number
   }))
+
+  validation {
+    condition     = alltrue([for s in var.services : s.ami_id != null])
+    error_message = "services[].ami_id (golden image) is required: the ASG launch template must use the golden AMI."
+  }
+}
+
+variable "default_ami_id_ssm_parameter" {
+  description = "SSM parameter for the Amazon Linux AMI used by the bastion host (the bastion always runs Amazon Linux; the golden image is reserved for the ASG launch template)"
+  type        = string
+  default     = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 }
