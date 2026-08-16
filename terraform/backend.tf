@@ -6,8 +6,6 @@ terraform {
     use_lockfile = true
     encrypt      = true
 
-    # Each Terraform workspace (dev, staging, prod) gets its own state file:
-    #   env:<workspace>/terraform/state/terraform.tfstate
     workspace_key_prefix = "env:"
   }
 }
