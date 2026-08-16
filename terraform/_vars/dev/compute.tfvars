@@ -1,16 +1,9 @@
-## 1. EC2_CONFIG
-## 2. ALB_CONFIG
-
-# -----------------------------------------------------------------------------------------
-
 # 1. EC2_CONFIG
 ec2_config = {
   bastion = {
     count         = 1
     instance_type = "t3.micro"
 
-    # AMI is NOT configurable: the bastion always runs Amazon Linux (AL2023 via SSM).
-    # The golden image is reserved exclusively for the ASG launch template (see services.tfvars).
     user_data                   = null
     availability_zone           = null
     associate_public_ip_address = true
@@ -25,8 +18,6 @@ ec2_config = {
 
   key_name = "eac-dev-key"
 }
-
-# ----------------------------------------------------------------------------------------
 
 # 2. ALB_CONFIG
 alb_config = {

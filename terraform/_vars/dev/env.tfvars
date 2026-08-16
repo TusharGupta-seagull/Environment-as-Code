@@ -1,7 +1,3 @@
-## 1. PROJECT_CONFIG
-
-# --------------------------------------------------------------------------------
-
 # 1. PROJECT_CONFIG
 project_config = {
   project_name = "eac"
