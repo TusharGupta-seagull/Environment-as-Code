@@ -1,11 +1,6 @@
 # SSH KEY - a key pair is generated on first apply, or an existing key pair is
 # used when ssh_key_pair_name is set (re-applies never invalidate instance keys).
 locals {
-  project_config    = var.project_config
-  network_config    = var.network_config
-  ec2_config        = var.ec2_config
-  alb_config        = var.alb_config
-  go_ansible        = var.go_ansible
   use_generated_key = var.ssh_key_pair_name == null
   ssh_key_name      = var.ssh_key_pair_name != null ? var.ssh_key_pair_name : var.ec2_config.key_name
 
@@ -67,8 +62,8 @@ resource "aws_ssm_parameter" "db_password" {
 # NETWORK -> VPC, SUBNETS, SECURITY_GROUP, ROUTE53
 module "network" {
   source         = "./network"
-  project_config = local.project_config
-  network_config = local.network_config
+  project_config = var.project_config
+  network_config = var.network_config
 }
 
 # Application Instances -> BASTION (EC2) + ASG services
@@ -147,7 +142,7 @@ data "aws_instances" "app" {
 
 module "ansible-config" {
   source = "./config-mgmt"
-  count  = local.go_ansible ? 1 : 0
+  count  = var.go_ansible ? 1 : 0
 
   key_name             = local.ssh_key_name
   ssh_private_key_path = var.ssh_private_key_path

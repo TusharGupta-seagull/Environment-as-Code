@@ -1,13 +1,8 @@
-locals {
-  create_alb       = var.network_config.settings.create_alb
-  allowed_ssh_cidr = var.network_config.settings.allowed_ssh_cidr
-}
-
 ## Security Group for Application Load Balancer
 module "alb_security_group" {
   source = "../_modules/network/security_group"
 
-  create_sg      = local.create_alb
+  create_sg      = var.network_config.settings.create_alb
   sg_name        = "${local.name_prefix}-alb-sg"
   sg_description = "Security group for Application Load Balancer"
   sg_vpc_id      = module.vpc.vpc_id
@@ -39,7 +34,7 @@ module "alb_security_group" {
     }
   }
 
-  tags = local.project_config.tags
+  tags = var.project_config.tags
   sg_tags = {
     Component = "alb"
   }
@@ -59,7 +54,7 @@ module "bastion_security_group" {
       from_port   = 22
       to_port     = 22
       ip_protocol = "tcp"
-      cidr_ipv4   = local.allowed_ssh_cidr
+      cidr_ipv4   = var.network_config.settings.allowed_ssh_cidr
       description = "Allow SSH access from anywhere"
     }
   }
@@ -74,7 +69,7 @@ module "bastion_security_group" {
     }
   }
 
-  tags = local.project_config.tags
+  tags = var.project_config.tags
   sg_tags = {
     Component = "bastion"
   }
@@ -125,7 +120,7 @@ module "app_security_group" {
     }
   }
 
-  tags = local.project_config.tags
+  tags = var.project_config.tags
   sg_tags = {
     Component = "app"
   }
@@ -167,7 +162,7 @@ module "db_security_group" {
     }
   }
 
-  tags = local.project_config.tags
+  tags = var.project_config.tags
   sg_tags = {
     Component = "db"
   }
@@ -209,7 +204,7 @@ module "rds_security_group" {
     }
   }
 
-  tags = local.project_config.tags
+  tags = var.project_config.tags
   sg_tags = {
     Component = "rds"
   }

@@ -1,7 +1,7 @@
 output "rds" {
   description = "RDS instance details"
   value = {
-    enabled = local.rds_config.create_rds
+    enabled = var.rds_config.create_rds
 
     identifier = try(module.rds_instance.rds_db_name, null)
     db_name    = try(module.rds_instance.rds_db_name, null)

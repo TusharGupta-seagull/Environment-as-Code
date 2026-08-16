@@ -4,7 +4,7 @@
 output "deployment_summary" {
   description = "Comprehensive deployment summary"
   value = {
-    project = local.project_config
+    project = var.project_config
     infrastructure = {
       vpc_id          = module.network.vpc.id
       public_subnets  = length(module.network.subnets.public.ids)

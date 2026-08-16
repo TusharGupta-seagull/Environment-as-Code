@@ -7,7 +7,7 @@ project_config = {
     Terraform   = "true"
     Environment = "dev"
     Project     = "EAC"
-    Owner       = "SgAlpha"
+    Owner       = "Seagull"
   }
 }
 

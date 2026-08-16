@@ -1,4 +1,3 @@
-# Ansible output
 output "ansible" {
   description = "Ansible configuration outputs"
   value = {
