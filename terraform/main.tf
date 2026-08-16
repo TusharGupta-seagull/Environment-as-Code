@@ -1,15 +1,7 @@
-# SSH KEY - a key pair is generated on first apply, or an existing key pair is
-# used when ssh_key_pair_name is set (re-applies never invalidate instance keys).
 locals {
   use_generated_key = var.ssh_key_pair_name == null
   ssh_key_name      = var.ssh_key_pair_name != null ? var.ssh_key_pair_name : var.ec2_config.key_name
 
-  # RDS password precedence:
-  #   1. var.db_password — supplied by the pipeline via the TF_VAR_db_password env
-  #      var on the Jenkins agent (e.g., fetched from Vault)
-  #   2. var.db_password_ssm_parameter — an existing SSM SecureString parameter
-  #   3. terraform generates a random password and stores it in SSM (SecureString)
-  # No plaintext password is ever written to the repo.
   db_password_effective = (
     var.db_password != null ? var.db_password :
     var.db_password_ssm_parameter != null ? "" :
@@ -42,8 +34,7 @@ data "aws_key_pair" "existing" {
   key_name = var.ssh_key_pair_name
 }
 
-# RDS password - generated and stored in SSM Parameter Store (SecureString) only
-# when neither TF_VAR_db_password nor an existing SSM parameter is supplied.
+# RDS password - generated and stored in SSM Parameter Store (SecureString)
 resource "random_password" "db_password" {
   count   = var.rds_config.create_rds && var.db_password == null && var.db_password_ssm_parameter == null ? 1 : 0
   length  = 24
@@ -71,7 +62,6 @@ module "application" {
   source = "./application"
 
   project_config = var.project_config
-  # key_name is overridden with the effective key (generated or existing)
   ec2_config = merge(var.ec2_config, { key_name = local.ssh_key_name })
   alb_config = var.alb_config
   services   = var.services
@@ -103,8 +93,6 @@ module "application" {
 module "database" {
   source         = "./database"
   project_config = var.project_config
-  # Password precedence: TF_VAR_db_password (env var on the Jenkins agent / Vault),
-  # else an existing SSM parameter, else a generated random password stored in SSM.
   rds_config = merge(var.rds_config, {
     credentials = {
       username               = var.rds_config.credentials.username
