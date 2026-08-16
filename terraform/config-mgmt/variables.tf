@@ -47,12 +47,6 @@ variable "app_private_ips" {
   default     = []
 }
 
-variable "ssh_private_key_path" {
-  description = "Local path to the SSH private key used by Ansible. When null, defaults to ansible/<key_name>.pem"
-  type        = string
-  default     = null
-}
-
 variable "instance_wait_seconds" {
   description = "Seconds to wait after apply before running the Ansible playbook (lets instances boot)"
   type        = number

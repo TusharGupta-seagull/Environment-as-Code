@@ -1,6 +1,5 @@
 locals {
-  # All generated files live under the project-root ansible/ directory, next to the playbook (main.yaml) and templates/.
-  ssh_key_path    = var.ssh_private_key_path != null ? abspath(var.ssh_private_key_path) : abspath("${path.module}/../../ansible/${var.key_name}.pem")
+  ssh_key_path    = abspath("${path.module}/../../ansible/${var.key_name}.pem")
   inventory_path  = abspath("${path.module}/../../ansible/inventory.ini")
   ssh_config_path = abspath("${path.module}/../../ansible/ssh_config")
   playbook_path   = abspath("${path.module}/../../ansible/main.yaml")

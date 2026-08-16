@@ -179,12 +179,6 @@ variable "ssh_key_pair_name" {
   default     = null
 }
 
-variable "ssh_private_key_path" {
-  description = "Local path to the private key file for ssh_key_pair_name (required by the Ansible bastion provisioning when using an existing key pair). Ignored when a key is generated."
-  type        = string
-  default     = null
-}
-
 variable "db_password" {
   description = "RDS password supplied via the TF_VAR_db_password env var on the Jenkins agent (e.g., fetched from Vault). When null, terraform falls back to db_password_ssm_parameter, or generates a random password stored in SSM Parameter Store."
   type        = string

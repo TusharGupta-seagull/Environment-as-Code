@@ -62,9 +62,9 @@ module "application" {
   source = "./application"
 
   project_config = var.project_config
-  ec2_config = merge(var.ec2_config, { key_name = local.ssh_key_name })
-  alb_config = var.alb_config
-  services   = var.services
+  ec2_config     = merge(var.ec2_config, { key_name = local.ssh_key_name })
+  alb_config     = var.alb_config
+  services       = var.services
 
   default_ami_id_ssm_parameter = var.default_ami_id_ssm_parameter
 
@@ -132,10 +132,9 @@ module "ansible-config" {
   source = "./config-mgmt"
   count  = var.go_ansible ? 1 : 0
 
-  key_name             = local.ssh_key_name
-  ssh_private_key_path = var.ssh_private_key_path
-  project_name         = var.project_config.project_name
-  env_name             = var.project_config.env_name
+  key_name     = local.ssh_key_name
+  project_name = var.project_config.project_name
+  env_name     = var.project_config.env_name
 
   bastion_public_ip = try(module.application.bastion_instances[0].public_ip, null)
   app_private_ips   = data.aws_instances.app.private_ips
